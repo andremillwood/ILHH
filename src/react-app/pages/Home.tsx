@@ -107,7 +107,7 @@ export default function Home() {
               <CountdownTimer eventDate={nextEvent.event_date} eventTime={nextEvent.event_time || undefined} />
             </div>
 
-            <div className="neon-border bg-black/80 backdrop-blur-md p-8 md:p-12">
+            <div className="glass-panel p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="font-display text-4xl md:text-6xl text-white mb-4">
@@ -173,7 +173,7 @@ export default function Home() {
       {/* Happy Hour Spotlight */}
       <section className="py-20 px-4 bg-gradient-to-b from-black to-neon-red/5">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="neon-border bg-black p-12">
+          <div className="glass-panel p-12">
             <Gift className="w-16 h-16 text-neon-red mx-auto mb-6" />
             <h2 className="font-display text-5xl md:text-7xl mb-6 text-white">
               HAPPY HOUR
@@ -215,7 +215,7 @@ export default function Home() {
                 <Link
                   key={mixtape.id}
                   to="/mixtapes"
-                  className="group neon-border bg-black/80 backdrop-blur-md overflow-hidden hover:neon-glow transition"
+                  className="group glass-panel overflow-hidden card-hover"
                 >
                   <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-neon-red/20 to-black">
                     {mixtape.cover_art_url ? (

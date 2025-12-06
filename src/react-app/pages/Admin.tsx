@@ -178,7 +178,7 @@ export default function Admin() {
           </div>
 
           {/* Tab Navigation */}
-          <div className="neon-border bg-black/80 backdrop-blur-md mb-8">
+          <div className="glass-panel mb-8">
             <div className="flex overflow-x-auto">
               {tabs.map(tab => (
                 <button
@@ -195,7 +195,7 @@ export default function Admin() {
           </div>
 
           {/* Content Area */}
-          <div className="neon-border bg-black/80 backdrop-blur-md p-8">
+          <div className="glass-panel p-8">
             {/* Overview Tab */}
             {activeTab === "overview" && (
               <div>
@@ -235,7 +235,7 @@ export default function Admin() {
                 ) : (
                   <div className="space-y-4">
                     {events.map(event => (
-                      <div key={event.id} className="flex items-center justify-between p-4 border border-gray-800 rounded">
+                      <div key={event.id} className="flex items-center justify-between p-4 border border-white/10 rounded card-hover bg-black/40">
                         <div>
                           <h3 className="text-white font-heading text-lg">{event.title}</h3>
                           <p className="text-gray-400 text-sm">{event.event_date} • {event.venue_name}</p>
@@ -280,7 +280,7 @@ export default function Admin() {
                 ) : (
                   <div className="space-y-4">
                     {articles.map(article => (
-                      <div key={article.id} className="flex items-center justify-between p-4 border border-gray-800 rounded">
+                      <div key={article.id} className="flex items-center justify-between p-4 border border-white/10 rounded card-hover bg-black/40">
                         <div>
                           <h3 className="text-white font-heading text-lg">{article.title}</h3>
                           <p className="text-gray-400 text-sm">{article.is_published ? "Published" : "Draft"} • /{article.slug}</p>
@@ -324,7 +324,7 @@ export default function Admin() {
                 ) : (
                   <div className="space-y-4">
                     {mixtapes.map(mixtape => (
-                      <div key={mixtape.id} className="flex items-center justify-between p-4 border border-gray-800 rounded">
+                      <div key={mixtape.id} className="flex items-center justify-between p-4 border border-white/10 rounded card-hover bg-black/40">
                         <div>
                           <h3 className="text-white font-heading text-lg">{mixtape.title}</h3>
                           <p className="text-gray-400 text-sm">by {mixtape.dj_name}</p>
@@ -433,7 +433,7 @@ function EventFormModal({ event, authHeader, onClose, onSave }: { event: Event |
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="neon-border bg-black p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <form onSubmit={handleSubmit} className="glass-panel p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-display text-3xl text-white">{event ? "Edit Event" : "New Event"}</h3>
           <button type="button" onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-6 h-6" /></button>
@@ -489,7 +489,7 @@ function ArticleFormModal({ article, authHeader, onClose, onSave }: { article: A
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="neon-border bg-black p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <form onSubmit={handleSubmit} className="glass-panel p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-display text-3xl text-white">{article ? "Edit Article" : "New Article"}</h3>
           <button type="button" onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-6 h-6" /></button>
@@ -541,7 +541,7 @@ function MixtapeFormModal({ mixtape, authHeader, onClose, onSave }: { mixtape: M
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="neon-border bg-black p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <form onSubmit={handleSubmit} className="glass-panel p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-display text-3xl text-white">{mixtape ? "Edit Mixtape" : "New Mixtape"}</h3>
           <button type="button" onClick={onClose} className="text-gray-400 hover:text-white"><X className="w-6 h-6" /></button>
