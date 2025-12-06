@@ -9,7 +9,7 @@ export default function Community() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/community/members")
+    fetch("/api/members?action=community")
       .then((res) => res.json())
       .then((data) => {
         setMembers(data);

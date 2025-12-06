@@ -23,7 +23,7 @@ export default function HappyHour() {
 
   useEffect(() => {
     if (!isPending && user && authHeader) {
-      fetch("/api/happy-hour/my-coupon", {
+      fetch("/api/happy-hour", {
         headers: { Authorization: authHeader }
       })
         .then((res) => res.json())
@@ -85,7 +85,7 @@ export default function HappyHour() {
   const generateCoupon = async () => {
     if (!authHeader) return;
     try {
-      const response = await fetch("/api/happy-hour/generate", {
+      const response = await fetch("/api/happy-hour", {
         method: "POST",
         headers: { Authorization: authHeader },
       });

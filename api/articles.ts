@@ -14,9 +14,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
+    const { slug } = req.query;
+
     try {
         const supabase = createUserClient();
 
+        // If slug provided, get single article
+        if (slug && typeof slug === 'string') {
+            const { data: article, error } = await supabase
+                .from('articles')
+                .select('*')
+                .eq('slug', slug)
+                .eq('is_published', true)
+                .single();
+
+            if (error) {
+                if (error.code === 'PGRST116') {
+                    return res.status(404).json({ error: 'Article not found' });
+                }
+                return res.status(500).json({ error: error.message });
+            }
+
+            return res.status(200).json(article);
+        }
+
+        // Get all articles
         const { data: articles, error } = await supabase
             .from('articles')
             .select('*')
@@ -25,13 +47,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             .limit(10);
 
         if (error) {
-            console.error('Error fetching articles:', error);
             return res.status(500).json({ error: error.message });
         }
 
         return res.status(200).json(articles || []);
     } catch (error: any) {
-        console.error('Error in articles handler:', error);
         return res.status(500).json({ error: error.message });
     }
 }

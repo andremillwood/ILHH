@@ -30,7 +30,7 @@ export default function Membership() {
 
   useEffect(() => {
     if (!isPending && user && authHeader) {
-      fetch("/api/members/me", {
+      fetch("/api/members?action=me", {
         headers: { Authorization: authHeader }
       })
         .then((res) => res.json())
@@ -70,7 +70,7 @@ export default function Membership() {
     setError("");
 
     try {
-      const url = member ? "/api/members/me" : "/api/members";
+      const url = member ? "/api/members?action=me" : "/api/members";
       const method = member ? "PUT" : "POST";
 
       const response = await fetch(url, {
