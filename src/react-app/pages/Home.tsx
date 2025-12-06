@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Calendar, MapPin, Mic2, Music, Camera, FileText, Gift } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
+import CountdownTimer from "@/react-app/components/CountdownTimer";
+import ShareButtons from "@/react-app/components/ShareButtons";
 import type { EventWithDJs, Mixtape, Article } from "@/shared/types";
 
 interface Gallery {
@@ -53,36 +55,36 @@ export default function Home() {
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black z-0" />
-        
+
         <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
           <div className="mb-8 animate-float">
-            <img 
-              src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png" 
-              alt="I Luv Hip Hop" 
+            <img
+              src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png"
+              alt="I Luv Hip Hop"
               className="w-64 h-64 mx-auto neon-glow"
             />
           </div>
-          
+
           <h1 className="font-display text-7xl md:text-9xl mb-6 neon-text-simple animate-glow-pulse">
             I LUV HIP HOP
           </h1>
-          
+
           <p className="text-2xl md:text-3xl text-white mb-4 font-heading tracking-wide">
             The Original Thursday Night Hip Hop Experience
           </p>
-          
+
           <p className="text-lg md:text-xl text-gray-400 mb-12 font-heading">
             Every Thursday • Dulce Lounge • Kingston, Jamaica
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
+            <Link
               to="/membership"
               className="px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider neon-glow"
             >
               Join Membership
             </Link>
-            <Link 
+            <Link
               to="/events"
               className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase tracking-wider"
             >
@@ -96,9 +98,14 @@ export default function Home() {
       {!loading && nextEvent && (
         <section className="py-20 px-4 relative">
           <div className="max-w-6xl mx-auto">
-            <h2 className="font-display text-5xl md:text-7xl text-center mb-12 neon-text-simple">
+            <h2 className="font-display text-5xl md:text-7xl text-center mb-6 neon-text-simple">
               THIS WEEK'S ENERGY
             </h2>
+
+            {/* Countdown Timer */}
+            <div className="mb-12">
+              <CountdownTimer eventDate={nextEvent.event_date} eventTime={nextEvent.event_time || undefined} />
+            </div>
 
             <div className="neon-border bg-black/80 backdrop-blur-md p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-8">
@@ -121,12 +128,19 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <Link 
-                    to={`/rsvp/${nextEvent.id}`}
-                    className="inline-block px-8 py-3 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading uppercase tracking-wider"
-                  >
-                    Reserve Your Table
-                  </Link>
+                  <div className="flex flex-col sm:flex-row gap-4 items-start">
+                    <Link
+                      to={`/rsvp/${nextEvent.id}`}
+                      className="inline-block px-8 py-3 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading uppercase tracking-wider"
+                    >
+                      Reserve Your Table
+                    </Link>
+                    <ShareButtons
+                      url={`/events`}
+                      title={`${nextEvent.sub_theme} - I Luv Hip Hop`}
+                      description={`Join us for ${nextEvent.theme} at ${nextEvent.venue_name}`}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-6">
@@ -170,7 +184,7 @@ export default function Home() {
             <p className="text-xl text-white mb-8 font-heading">
               Member-exclusive 2-4-1 drink specials. Get there early.
             </p>
-            <Link 
+            <Link
               to="/happy-hour"
               className="inline-block px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider neon-glow"
             >
@@ -188,7 +202,7 @@ export default function Home() {
               <h2 className="font-display text-5xl md:text-7xl neon-text-simple">
                 MIXTAPE VAULT
               </h2>
-              <Link 
+              <Link
                 to="/mixtapes"
                 className="px-6 py-3 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading uppercase tracking-wider"
               >
@@ -237,7 +251,7 @@ export default function Home() {
               <h2 className="font-display text-5xl md:text-7xl neon-text-simple">
                 CAPTURED MOMENTS
               </h2>
-              <Link 
+              <Link
                 to="/gallery"
                 className="px-6 py-3 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading uppercase tracking-wider"
               >
@@ -278,7 +292,7 @@ export default function Home() {
               <h2 className="font-display text-5xl md:text-7xl neon-text-simple">
                 CULTURE & FEATURES
               </h2>
-              <Link 
+              <Link
                 to="/articles"
                 className="px-6 py-3 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading uppercase tracking-wider"
               >
@@ -328,7 +342,7 @@ export default function Home() {
             <p className="text-xl text-white mb-8 font-heading">
               Join the I Luv Hip Hop membership for 2-4-1 specials, priority RSVP, and exclusive perks
             </p>
-            <Link 
+            <Link
               to="/membership"
               className="inline-block px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider neon-glow"
             >
@@ -343,9 +357,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
-              <img 
-                src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png" 
-                alt="I Luv Hip Hop" 
+              <img
+                src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png"
+                alt="I Luv Hip Hop"
                 className="h-16 w-auto mb-4"
               />
               <p className="text-gray-400 font-heading">

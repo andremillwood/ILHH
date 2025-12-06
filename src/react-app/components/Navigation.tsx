@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router";
 import { Menu, X, UserCircle } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
+import SearchBar from "@/react-app/components/SearchBar";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,6 +72,9 @@ export default function Navigation() {
             <Link to="/membership" className={linkClass("/membership")}>
               Membership
             </Link>
+
+            {/* Search */}
+            <SearchBar />
 
             {loading ? (
               <div className="w-20 h-8 bg-gray-800 animate-pulse rounded"></div>
