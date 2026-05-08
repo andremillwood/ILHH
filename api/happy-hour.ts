@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createServerClient, createUserClient } from './_lib/supabase';
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,14 +16,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const supabaseUser = createUserClient(authHeader);
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+            throw new Error('Missing Supabase environment variables');
+        }
+
+        const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
+            global: { headers: { Authorization: authHeader } },
+            auth: { persistSession: false }
+        });
+
         const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
 
         if (authError || !user) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        const supabase = createServerClient();
+        const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+            auth: { persistSession: false }
+        });
 
         // Get member
         const { data: member } = await supabase

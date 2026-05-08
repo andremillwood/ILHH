@@ -1,12 +1,14 @@
 import { Link, useLocation } from "react-router";
-import { Menu, X, UserCircle } from "lucide-react";
+import { Menu, ShoppingBag, X, UserCircle } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import SearchBar from "@/react-app/components/SearchBar";
+import { useCart } from "@/react-app/lib/CartContext";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading, signInWithGoogle, signOut } = useAuth();
+  const { itemCount } = useCart();
   const location = useLocation();
 
   const isActive = (path: string) => {
@@ -41,9 +43,13 @@ export default function Navigation() {
           <Link to="/" className="flex items-center">
             <img
               src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png"
-              alt="I Luv Hip Hop"
+              alt="This Is Hip Hop Caribbean"
               className="h-12 w-auto"
             />
+            <span className="ml-3 hidden xl:block font-heading text-white uppercase tracking-wider text-xs leading-tight">
+              This Is Hip Hop<br />
+              Caribbean
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -53,6 +59,9 @@ export default function Navigation() {
             </Link>
             <Link to="/events" className={linkClass("/events")}>
               Events
+            </Link>
+            <Link to="/profiles" className={linkClass("/profiles")}>
+              Profiles
             </Link>
             <Link to="/happy-hour" className={linkClass("/happy-hour")}>
               Happy Hour
@@ -66,11 +75,25 @@ export default function Navigation() {
             <Link to="/gallery" className={linkClass("/gallery")}>
               Gallery
             </Link>
+            <Link to="/merch" className={linkClass("/merch")}>
+              <span className="inline-flex items-center">
+                Merch
+                {itemCount > 0 && (
+                  <span className="ml-2 inline-flex items-center text-neon-red">
+                    <ShoppingBag className="w-4 h-4 mr-1" />
+                    {itemCount}
+                  </span>
+                )}
+              </span>
+            </Link>
             <Link to="/community" className={linkClass("/community")}>
               Community
             </Link>
             <Link to="/membership" className={linkClass("/membership")}>
               Membership
+            </Link>
+            <Link to="/submit-event" className={linkClass("/submit-event")}>
+              Submit
             </Link>
 
             {/* Search */}
@@ -130,6 +153,13 @@ export default function Navigation() {
               Events
             </Link>
             <Link
+              to="/profiles"
+              className={`block ${linkClass("/profiles")}`}
+              onClick={() => setIsOpen(false)}
+            >
+              Profiles
+            </Link>
+            <Link
               to="/happy-hour"
               className={`block ${linkClass("/happy-hour")}`}
               onClick={() => setIsOpen(false)}
@@ -158,6 +188,13 @@ export default function Navigation() {
               Gallery
             </Link>
             <Link
+              to="/merch"
+              className={`block ${linkClass("/merch")}`}
+              onClick={() => setIsOpen(false)}
+            >
+              Merch {itemCount > 0 ? `(${itemCount})` : ""}
+            </Link>
+            <Link
               to="/community"
               className={`block ${linkClass("/community")}`}
               onClick={() => setIsOpen(false)}
@@ -170,6 +207,13 @@ export default function Navigation() {
               onClick={() => setIsOpen(false)}
             >
               Membership
+            </Link>
+            <Link
+              to="/submit-event"
+              className={`block ${linkClass("/submit-event")}`}
+              onClick={() => setIsOpen(false)}
+            >
+              Submit Event
             </Link>
             {loading ? (
               <div className="w-full h-8 bg-gray-800 animate-pulse rounded"></div>

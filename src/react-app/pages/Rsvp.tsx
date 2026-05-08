@@ -25,7 +25,7 @@ export default function Rsvp() {
 
   useEffect(() => {
     if (eventId) {
-      fetch(`/api/events/${eventId}`)
+      fetch(`/api/events?id=${eventId}`)
         .then((res) => res.json())
         .then((data) => {
           setEvent(data);
@@ -102,7 +102,7 @@ export default function Rsvp() {
                 RSVP CONFIRMED!
               </h1>
               <p className="text-xl text-gray-300 mb-8 font-heading">
-                We've received your table reservation for {event.sub_theme}
+                We've received your RSVP and table reservation request for {event.sub_theme || event.title}.
               </p>
               <p className="text-gray-400 font-heading mb-8">
                 You'll receive a confirmation email at {formData.email}
@@ -129,6 +129,9 @@ export default function Rsvp() {
           <h1 className="font-display text-6xl md:text-8xl text-center mb-6 neon-text-simple animate-glow-pulse">
             RESERVE YOUR TABLE
           </h1>
+          <p className="text-center text-xl text-gray-400 mb-10 font-heading max-w-3xl mx-auto">
+            RSVP for designated I Luv Hip Hop events and request the table package that fits your group.
+          </p>
 
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Event Details */}
@@ -144,12 +147,15 @@ export default function Rsvp() {
                 <div className="flex items-center text-white">
                   <Calendar className="w-5 h-5 mr-3 text-neon-red" />
                   <span className="font-heading">
-                    {new Date(event.event_date).toLocaleDateString('en-US', { 
-                      weekday: 'long', 
-                      month: 'long', 
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
+                    {(() => {
+                      const [y, m, d] = event.event_date.split('-').map(Number);
+                      return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                      });
+                    })()}
                   </span>
                 </div>
                 <div className="flex items-center text-white">

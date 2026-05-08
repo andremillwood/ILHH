@@ -21,6 +21,12 @@ export default function Footer() {
               <Link to="/events" className="block text-gray-400 hover:text-neon-red transition font-heading">
                 Events Calendar
               </Link>
+              <Link to="/profiles" className="block text-gray-400 hover:text-neon-red transition font-heading">
+                DJ & Promoter Profiles
+              </Link>
+              <Link to="/submit-event" className="block text-gray-400 hover:text-neon-red transition font-heading">
+                Submit Event
+              </Link>
               <Link to="/membership" className="block text-gray-400 hover:text-neon-red transition font-heading">
                 Membership
               </Link>
@@ -32,6 +38,9 @@ export default function Footer() {
               </Link>
               <Link to="/gallery" className="block text-gray-400 hover:text-neon-red transition font-heading">
                 Gallery
+              </Link>
+              <Link to="/merch" className="block text-gray-400 hover:text-neon-red transition font-heading">
+                Merch
               </Link>
               <Link to="/community" className="block text-gray-400 hover:text-neon-red transition font-heading">
                 Community

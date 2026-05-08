@@ -17,12 +17,30 @@ export default function CountdownTimer({ eventDate, eventTime, className = '' }:
     const [expired, setExpired] = useState(false);
 
     useEffect(() => {
-        const targetDate = new Date(eventDate);
+        const [y, m, d] = eventDate.split('-').map(Number);
+        const targetDate = new Date(y, m - 1, d); // Local Midnight
+
         if (eventTime) {
-            const [hours, minutes] = eventTime.split(':').map(Number);
-            targetDate.setHours(hours || 20, minutes || 0, 0, 0);
+            const timeStr = eventTime.toUpperCase().trim();
+            const isPM = timeStr.includes('PM');
+            const isAM = timeStr.includes('AM');
+
+            // Extract just the numbers "10:00"
+            const cleanTime = timeStr.replace(/[A-Z\s]/g, '');
+            const [hStr, mStr] = cleanTime.split(':');
+
+            let hours = parseInt(hStr, 10);
+            const minutes = parseInt(mStr, 10) || 0;
+
+            if (!isNaN(hours)) {
+                if (isPM && hours < 12) hours += 12;
+                if (isAM && hours === 12) hours = 0;
+                targetDate.setHours(hours, minutes, 0, 0);
+            } else {
+                targetDate.setHours(22, 0, 0, 0); // Default if parse fails (10 PM)
+            }
         } else {
-            targetDate.setHours(20, 0, 0, 0); // Default to 8 PM
+            targetDate.setHours(22, 0, 0, 0); // Default to 10 PM (Club Time)
         }
 
         const calculateTimeLeft = () => {

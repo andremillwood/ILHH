@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { Calendar, MapPin, Mic2, Music, Camera, FileText, Gift } from "lucide-react";
+import { Calendar, MapPin, Mic2, Music, Camera, FileText, Gift, Radio, Ticket, Users, ShoppingBag } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import CountdownTimer from "@/react-app/components/CountdownTimer";
 import ShareButtons from "@/react-app/components/ShareButtons";
@@ -39,7 +39,17 @@ export default function Home() {
       });
   }, []);
 
-  const nextEvent = events[0];
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  const upcomingEvents = events.filter(event => {
+    const [y, m, d] = event.event_date.split('-').map(Number);
+    const eventDate = new Date(y, m - 1, d);
+    return eventDate >= now;
+  });
+
+  const isFlagshipEvent = (title: string) => title.toLowerCase().includes("i luv hip hop");
+  const nextEvent = upcomingEvents.find(e => isFlagshipEvent(e.title)) || upcomingEvents[0];
 
   return (
     <div className="min-h-screen bg-black graffiti-texture">
@@ -65,16 +75,22 @@ export default function Home() {
             />
           </div>
 
-          <h1 className="font-display text-7xl md:text-9xl mb-6 neon-text-simple animate-glow-pulse">
-            I LUV HIP HOP
+          <p className="text-neon-red font-heading uppercase tracking-[0.35em] mb-4">
+            I Luv Hip Hop presents
+          </p>
+
+          <h1 className="font-display text-6xl md:text-9xl mb-6 neon-text-simple animate-glow-pulse">
+            THIS IS HIP HOP CARIBBEAN
           </h1>
 
           <p className="text-2xl md:text-3xl text-white mb-4 font-heading tracking-wide">
-            The Original Thursday Night Hip Hop Experience
+            The Caribbean hub for events, DJs, promoters, culture, and community.
           </p>
 
-          <p className="text-lg md:text-xl text-gray-400 mb-12 font-heading">
-            Every Thursday • Dulce Lounge • Kingston, Jamaica
+          <p className="text-lg md:text-xl text-gray-400 mb-12 font-heading max-w-2xl mx-auto">
+            I Luv Hip Hop remains our flagship weekly event while the platform expands to promote every room where hip hop is properly represented.
+            <br />
+            Flagship Thursdays • Dulce Lounge • Kingston, Jamaica
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -88,7 +104,65 @@ export default function Home() {
               to="/events"
               className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase tracking-wider"
             >
-              RSVP Table Deals
+              Find Events & RSVP
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Brand Expansion */}
+      <section className="py-20 px-4 bg-gradient-to-b from-black to-neon-red/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="neon-border bg-black/80 p-8">
+              <Ticket className="w-10 h-10 text-neon-red mb-4" />
+              <h2 className="font-display text-4xl text-white mb-4">Flagship Weekly</h2>
+              <p className="text-gray-300 font-heading">
+                I Luv Hip Hop continues as the weekly home base for dedicated hip hop nights, table reservations, and member access.
+              </p>
+            </div>
+            <div className="neon-border bg-black/80 p-8">
+              <Radio className="w-10 h-10 text-neon-red mb-4" />
+              <h2 className="font-display text-4xl text-white mb-4">Promoted Events</h2>
+              <p className="text-gray-300 font-heading">
+                We highlight trusted DJs and promoters across Jamaica and the Caribbean when hip hop is represented with intent.
+              </p>
+              <Link to="/submit-event" className="inline-block mt-5 text-neon-red hover:text-white transition font-heading uppercase tracking-wider">
+                Submit Event
+              </Link>
+            </div>
+            <div className="neon-border bg-black/80 p-8">
+              <Users className="w-10 h-10 text-neon-red mb-4" />
+              <h2 className="font-display text-4xl text-white mb-4">Newsletter & Members</h2>
+              <p className="text-gray-300 font-heading">
+                Members get the newsletter, first notice on designated RSVP events, happy hour perks, and community updates.
+              </p>
+              <Link to="/profiles" className="inline-block mt-5 text-neon-red hover:text-white transition font-heading uppercase tracking-wider">
+                View Profiles
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Merch Spotlight */}
+      <section className="py-20 px-4">
+        <div className="max-w-6xl mx-auto neon-border bg-black/80 p-8 md:p-12">
+          <div className="grid md:grid-cols-[auto_1fr_auto] gap-6 items-center">
+            <ShoppingBag className="w-16 h-16 text-neon-red" />
+            <div>
+              <h2 className="font-display text-5xl md:text-7xl text-white mb-3">
+                OFFICIAL MERCH
+              </h2>
+              <p className="text-xl text-gray-300 font-heading">
+                Build the culture beyond the event with t-shirts, hats, polo shirts, jackets, and limited member drops.
+              </p>
+            </div>
+            <Link
+              to="/merch"
+              className="px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider text-center"
+            >
+              Shop Merch
             </Link>
           </div>
         </div>
@@ -108,59 +182,74 @@ export default function Home() {
             </div>
 
             <div className="glass-panel p-8 md:p-12">
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="font-display text-4xl md:text-6xl text-white mb-4">
-                    {nextEvent.sub_theme}
-                  </h3>
-                  <p className="text-lg text-gray-300 mb-6 font-heading">
-                    Theme: {nextEvent.theme}
-                  </p>
-
-                  <div className="space-y-4 mb-8">
-                    <div className="flex items-center text-white">
-                      <Calendar className="w-5 h-5 mr-3 text-neon-red" />
-                      <span className="font-heading">{new Date(nextEvent.event_date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
-                    </div>
-                    <div className="flex items-center text-white">
-                      <MapPin className="w-5 h-5 mr-3 text-neon-red" />
-                      <span className="font-heading">{nextEvent.venue_name} - {nextEvent.venue_address}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-4 items-start">
-                    <Link
-                      to={`/rsvp/${nextEvent.id}`}
-                      className="inline-block px-8 py-3 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading uppercase tracking-wider"
-                    >
-                      Reserve Your Table
-                    </Link>
-                    <ShareButtons
-                      url={`/events`}
-                      title={`${nextEvent.sub_theme} - I Luv Hip Hop`}
-                      description={`Join us for ${nextEvent.theme} at ${nextEvent.venue_name}`}
+              <div className="grid md:grid-cols-12 gap-8 items-center">
+                {/* Flyer Image */}
+                <div className="md:col-span-4">
+                  <div className="aspect-[4/5] rounded-lg overflow-hidden relative shadow-2xl neon-border">
+                    <img
+                      src={nextEvent.title.includes("Dipset") ? "/flyers/dipset_forever.jpg" : (nextEvent.flyer_url || "https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png")}
+                      alt={nextEvent.title}
+                      className="w-full h-full object-cover transform hover:scale-105 transition duration-700"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                {/* Event Details */}
+                <div className="md:col-span-8 grid md:grid-cols-2 gap-8">
                   <div>
-                    <h4 className="font-heading text-xl text-neon-red mb-4 flex items-center">
-                      <Mic2 className="w-5 h-5 mr-2" />
-                      DJ LINEUP
-                    </h4>
-                    <div className="space-y-3">
-                      {nextEvent.djs.map((dj) => (
-                        <div key={dj.id} className="border-l-2 border-neon-red pl-4">
-                          <p className="font-heading text-lg text-white">{dj.dj_name}</p>
-                          {dj.dj_description && (
-                            <p className="text-sm text-gray-400">{dj.dj_description}</p>
-                          )}
-                          {dj.is_resident === 1 && (
-                            <span className="text-xs text-neon-red">ILHH RESIDENT</span>
-                          )}
-                        </div>
-                      ))}
+                    <h3 className="font-display text-4xl md:text-5xl text-white mb-4 leading-tight">
+                      {nextEvent.title}
+                      {nextEvent.sub_theme && <span className="block text-2xl text-neon-red mt-2">{nextEvent.sub_theme}</span>}
+                    </h3>
+                    <p className="text-lg text-gray-300 mb-6 font-heading">
+                      Theme: {nextEvent.theme}
+                    </p>
+
+                    <div className="space-y-4 mb-8">
+                      <div className="flex items-center text-white">
+                        <Calendar className="w-5 h-5 mr-3 text-neon-red" />
+                        <span className="font-heading">{new Date(new Date(nextEvent.event_date).getTime() + new Date(nextEvent.event_date).getTimezoneOffset() * 60000).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</span>
+                      </div>
+                      <div className="flex items-center text-white">
+                        <MapPin className="w-5 h-5 mr-3 text-neon-red" />
+                        <span className="font-heading">{nextEvent.venue_name}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 items-start">
+                      <Link
+                        to={`/events/${nextEvent.id}`}
+                        className="inline-block px-8 py-3 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading uppercase tracking-wider"
+                      >
+                        Event Details
+                      </Link>
+                      <ShareButtons
+                        url={`/events`}
+                        title={`${nextEvent.sub_theme} - I Luv Hip Hop`}
+                        description={`Join us for ${nextEvent.theme} at ${nextEvent.venue_name}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-6 border-l border-white/10 pl-6 hidden md:block">
+                    <div>
+                      <h4 className="font-heading text-xl text-neon-red mb-4 flex items-center">
+                        <Mic2 className="w-5 h-5 mr-2" />
+                        DJ LINEUP
+                      </h4>
+                      <div className="space-y-3">
+                        {nextEvent.djs.map((dj) => (
+                          <div key={dj.id} className="border-l-2 border-neon-red pl-4">
+                            <p className="font-heading text-lg text-white">{dj.dj_name}</p>
+                            {dj.dj_description && (
+                              <p className="text-sm text-gray-400">{dj.dj_description}</p>
+                            )}
+                            {dj.is_resident === 1 && (
+                              <span className="text-xs text-neon-red">RESIDENT</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -214,7 +303,7 @@ export default function Home() {
               {mixtapes.map((mixtape) => (
                 <Link
                   key={mixtape.id}
-                  to="/mixtapes"
+                  to={`/mixtapes/${mixtape.slug || mixtape.id}`}
                   className="group glass-panel overflow-hidden card-hover"
                 >
                   <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-neon-red/20 to-black">
@@ -340,7 +429,7 @@ export default function Home() {
               UNLOCK EXCLUSIVE ACCESS
             </h2>
             <p className="text-xl text-white mb-8 font-heading">
-              Join the I Luv Hip Hop membership for 2-4-1 specials, priority RSVP, and exclusive perks
+              Subscribe to the This Is Hip Hop Caribbean newsletter and join membership for event alerts, priority RSVP, table reservations, and exclusive perks.
             </p>
             <Link
               to="/membership"

@@ -1,6 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createServerClient, createUserClient } from './_lib/supabase';
+import { createServerClient, createUserClient } from './_lib/supabase.js';
 import { z } from 'zod';
+import { adminEmails, emailSenders, sendBrandedEmail, siteUrl } from './_lib/email.js';
+import { enforceRateLimit } from './_lib/rate-limit.js';
 
 const MemberSchema = z.object({
     email: z.string().email(),
@@ -120,6 +122,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
             const data = parseResult.data;
 
+            const rateLimit = await enforceRateLimit(req, supabase, { bucket: 'membership_create', limit: 5, windowSeconds: 60 * 60 });
+            if (!rateLimit.allowed) {
+                return res.status(429).json({ error: 'Too many membership attempts. Try again later.' });
+            }
+
             // Check if member already exists
             const { data: existing } = await supabase
                 .from('members')
@@ -152,6 +159,53 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 .single();
 
             if (error) return res.status(500).json({ error: error.message });
+
+            await Promise.all([
+                sendBrandedEmail({
+                    to: data.email,
+                    subject: 'Welcome to I Love Hip Hop JA',
+                    preview: 'Your member profile is live.',
+                    from: emailSenders.membership,
+                    eyebrow: 'Membership',
+                    title: 'Welcome to the movement',
+                    intro: 'Your member profile has been created. You can update your details, keep your favorites fresh, and stay close to upcoming drops and events.',
+                    sections: [
+                        {
+                            title: 'Profile',
+                            rows: [
+                                ['Name', `${data.first_name} ${data.last_name}`],
+                                ['Location', data.location],
+                                ['Instagram', data.instagram_handle],
+                                ['Favorite genre', data.favorite_genre],
+                            ],
+                        },
+                    ],
+                    action: { label: 'View Membership', url: siteUrl('/membership') },
+                }),
+                sendBrandedEmail({
+                    to: adminEmails,
+                    subject: `New member: ${data.first_name} ${data.last_name}`,
+                    preview: `${data.first_name} ${data.last_name} joined the member community.`,
+                    from: emailSenders.ops,
+                    eyebrow: 'Admin Alert',
+                    title: 'New member profile',
+                    intro: 'A new member profile was created.',
+                    sections: [
+                        {
+                            title: 'Member',
+                            rows: [
+                                ['Name', `${data.first_name} ${data.last_name}`],
+                                ['Email', data.email],
+                                ['Phone', data.phone],
+                                ['Instagram', data.instagram_handle],
+                                ['Location', data.location],
+                            ],
+                        },
+                    ],
+                    replyTo: data.email,
+                }),
+            ]);
+
             return res.status(201).json({ success: true, id: member.id });
         }
 

@@ -1,6 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createServerClient } from './_lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
+import { adminEmails, emailSenders, sendBrandedEmail, siteUrl } from './_lib/email.js';
+import { enforceRateLimit } from './_lib/rate-limit.js';
 
 const RsvpSchema = z.object({
     event_id: z.number(),
@@ -37,7 +39,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         const data = parseResult.data;
-        const supabase = createServerClient();
+
+        // Inline Supabase logic
+        const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+        const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+        if (!supabaseUrl || !supabaseServiceKey) {
+            throw new Error('Missing Supabase server environment variables in rsvps.ts');
+        }
+
+        const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+            auth: { persistSession: false }
+        });
+
+        const rateLimit = await enforceRateLimit(req, supabase, { bucket: 'rsvp', limit: 6, windowSeconds: 60 * 60 });
+        if (!rateLimit.allowed) {
+            return res.status(429).json({ error: 'Too many RSVP attempts. Try again later.' });
+        }
 
         const { data: rsvp, error } = await supabase
             .from('rsvps')
@@ -59,6 +77,55 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             console.error('Error creating RSVP:', error);
             return res.status(500).json({ error: error.message });
         }
+
+        await Promise.all([
+            sendBrandedEmail({
+                to: data.email,
+                subject: 'RSVP received | I Love Hip Hop JA',
+                preview: 'Your RSVP has been received and is pending review.',
+                from: emailSenders.events,
+                eyebrow: 'RSVP Received',
+                title: 'You are on the list',
+                intro: 'We received your RSVP request. The team will review the details and follow up if anything else is needed before the event.',
+                sections: [
+                    {
+                        title: 'RSVP Details',
+                        rows: [
+                            ['Name', data.name],
+                            ['Package', data.package_type.toUpperCase()],
+                            ['Group size', data.group_size || 1],
+                            ['Bottle selection', data.bottle_selection],
+                            ['Notes', data.special_notes],
+                        ],
+                    },
+                ],
+                action: { label: 'View Events', url: siteUrl('/events') },
+            }),
+            sendBrandedEmail({
+                to: adminEmails,
+                subject: `New RSVP: ${data.name}`,
+                preview: `${data.name} submitted an RSVP for event ${data.event_id}.`,
+                from: emailSenders.ops,
+                eyebrow: 'Admin Alert',
+                title: 'New RSVP Submitted',
+                intro: 'A new RSVP is waiting in the dashboard/Supabase queue.',
+                sections: [
+                    {
+                        title: 'Guest',
+                        rows: [
+                            ['Name', data.name],
+                            ['Email', data.email],
+                            ['Phone', data.phone],
+                            ['Event ID', data.event_id],
+                            ['Package', data.package_type],
+                            ['Group size', data.group_size || 1],
+                            ['Bottle selection', data.bottle_selection],
+                            ['Notes', data.special_notes],
+                        ],
+                    },
+                ],
+            }),
+        ]);
 
         return res.status(201).json({ success: true, id: rsvp.id });
     } catch (error: any) {

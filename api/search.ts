@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createUserClient } from './_lib/supabase';
+import { createUserClient } from './_lib/supabase.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -40,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 .limit(10),
             supabase
                 .from('mixtapes')
-                .select('id, title, dj_name, description')
+                .select('id, title, slug, dj_name, description')
                 .or(`title.ilike.${searchTerm},dj_name.ilike.${searchTerm},description.ilike.${searchTerm}`)
                 .limit(10),
         ]);

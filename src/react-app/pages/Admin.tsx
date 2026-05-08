@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth, useAuthHeader } from "@/lib/AuthContext";
 import { useNavigate } from "react-router";
-import { Settings, Calendar, Users, FileText, Music, Image, Gift, Plus, Trash2, Edit, Save, X, Loader2 } from "lucide-react";
+import { Settings, Calendar, Users, FileText, Music, Image, Gift, Plus, Trash2, Edit, Save, X, Loader2, ShoppingBag, ClipboardList, Mail } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 
 interface Event {
@@ -48,18 +48,58 @@ interface Member {
   created_at: string;
 }
 
+interface AdminOrder {
+  id: number;
+  public_id: string;
+  customer_email?: string;
+  customer_name?: string;
+  total_cents: number;
+  currency: string;
+  status_v2: string;
+  fulfillment_status: string;
+  printful_order_id?: string;
+  tracking_url?: string;
+  created_at: string;
+  merch_order_items?: Array<{ id: number; product_name: string; color?: string; size?: string; quantity: number }>;
+}
+
+interface AdminRsvp {
+  id: number;
+  event_id: number;
+  name: string;
+  email: string;
+  phone: string;
+  package_type: string;
+  status?: string;
+  created_at: string;
+}
+
+interface AdminEventSubmission {
+  id: number;
+  event_title: string;
+  event_date: string;
+  venue_name: string;
+  promoter_name: string;
+  promoter_email: string;
+  status: string;
+  created_at: string;
+}
+
 export default function Admin() {
   const { user, loading: isPending } = useAuth();
   const authHeader = useAuthHeader();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>("overview");
-  const [stats, setStats] = useState({ totalEvents: 0, totalMembers: 0, totalRsvps: 0 });
+  const [stats, setStats] = useState({ totalEvents: 0, totalMembers: 0, totalRsvps: 0, totalOrders: 0, failedOrders: 0, pendingEventSubmissions: 0 });
 
   // Data states
   const [events, setEvents] = useState<Event[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
   const [mixtapes, setMixtapes] = useState<Mixtape[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [rsvps, setRsvps] = useState<AdminRsvp[]>([]);
+  const [eventSubmissions, setEventSubmissions] = useState<AdminEventSubmission[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Form states
@@ -83,6 +123,9 @@ export default function Admin() {
     if (authHeader && activeTab === "articles") fetchArticles();
     if (authHeader && activeTab === "mixtapes") fetchMixtapes();
     if (authHeader && activeTab === "members") fetchMembers();
+    if (authHeader && activeTab === "orders") fetchOrders();
+    if (authHeader && activeTab === "rsvps") fetchRsvps();
+    if (authHeader && activeTab === "submissions") fetchEventSubmissions();
   }, [activeTab, authHeader]);
 
   const fetchStats = async () => {
@@ -95,7 +138,7 @@ export default function Admin() {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/events", { headers: { Authorization: authHeader! } });
+      const res = await fetch("/api/admin?resource=events", { headers: { Authorization: authHeader! } });
       if (res.ok) setEvents(await res.json());
     } catch (err) { console.error(err); }
     setLoading(false);
@@ -104,7 +147,7 @@ export default function Admin() {
   const fetchArticles = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/articles", { headers: { Authorization: authHeader! } });
+      const res = await fetch("/api/admin?resource=articles", { headers: { Authorization: authHeader! } });
       if (res.ok) setArticles(await res.json());
     } catch (err) { console.error(err); }
     setLoading(false);
@@ -113,7 +156,7 @@ export default function Admin() {
   const fetchMixtapes = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/mixtapes", { headers: { Authorization: authHeader! } });
+      const res = await fetch("/api/admin?resource=mixtapes", { headers: { Authorization: authHeader! } });
       if (res.ok) setMixtapes(await res.json());
     } catch (err) { console.error(err); }
     setLoading(false);
@@ -128,21 +171,53 @@ export default function Admin() {
     setLoading(false);
   };
 
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin?resource=orders", { headers: { Authorization: authHeader! } });
+      if (res.ok) setOrders(await res.json());
+    } catch (err) { console.error(err); }
+    setLoading(false);
+  };
+
+  const fetchRsvps = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin?resource=rsvps", { headers: { Authorization: authHeader! } });
+      if (res.ok) setRsvps(await res.json());
+    } catch (err) { console.error(err); }
+    setLoading(false);
+  };
+
+  const fetchEventSubmissions = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/admin?resource=event_submissions", { headers: { Authorization: authHeader! } });
+      if (res.ok) setEventSubmissions(await res.json());
+    } catch (err) { console.error(err); }
+    setLoading(false);
+  };
+
+  const resendOrderEmail = async (id: number) => {
+    await fetch(`/api/admin?resource=orders&id=${id}&action=resend`, { method: "POST", headers: { Authorization: authHeader! } });
+    fetchOrders();
+  };
+
   const handleDeleteEvent = async (id: number) => {
     if (!confirm("Delete this event?")) return;
-    await fetch(`/api/admin/events?id=${id}`, { method: "DELETE", headers: { Authorization: authHeader! } });
+    await fetch(`/api/admin?resource=events&id=${id}`, { method: "DELETE", headers: { Authorization: authHeader! } });
     fetchEvents();
   };
 
   const handleDeleteArticle = async (id: number) => {
     if (!confirm("Delete this article?")) return;
-    await fetch(`/api/admin/articles?id=${id}`, { method: "DELETE", headers: { Authorization: authHeader! } });
+    await fetch(`/api/admin?resource=articles&id=${id}`, { method: "DELETE", headers: { Authorization: authHeader! } });
     fetchArticles();
   };
 
   const handleDeleteMixtape = async (id: number) => {
     if (!confirm("Delete this mixtape?")) return;
-    await fetch(`/api/admin/mixtapes?id=${id}`, { method: "DELETE", headers: { Authorization: authHeader! } });
+    await fetch(`/api/admin?resource=mixtapes&id=${id}`, { method: "DELETE", headers: { Authorization: authHeader! } });
     fetchMixtapes();
   };
 
@@ -159,6 +234,9 @@ export default function Admin() {
   const tabs = [
     { id: "overview", label: "Overview", icon: Settings },
     { id: "events", label: "Events", icon: Calendar },
+    { id: "orders", label: "Orders", icon: ShoppingBag },
+    { id: "rsvps", label: "RSVPs", icon: ClipboardList },
+    { id: "submissions", label: "Submissions", icon: Mail },
     { id: "members", label: "Members", icon: Users },
     { id: "articles", label: "Articles", icon: FileText },
     { id: "mixtapes", label: "Mixtapes", icon: Music },
@@ -200,7 +278,7 @@ export default function Admin() {
             {activeTab === "overview" && (
               <div>
                 <h2 className="font-display text-4xl text-white mb-8">Dashboard Overview</h2>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-6">
                   <div className="border-l-2 border-neon-red pl-4">
                     <p className="text-neon-red font-heading text-sm uppercase mb-2">Total Events</p>
                     <p className="text-white text-3xl font-display">{stats.totalEvents}</p>
@@ -213,6 +291,81 @@ export default function Admin() {
                     <p className="text-neon-red font-heading text-sm uppercase mb-2">Total RSVPs</p>
                     <p className="text-white text-3xl font-display">{stats.totalRsvps}</p>
                   </div>
+                  <div className="border-l-2 border-neon-red pl-4">
+                    <p className="text-neon-red font-heading text-sm uppercase mb-2">Orders</p>
+                    <p className="text-white text-3xl font-display">{stats.totalOrders}</p>
+                  </div>
+                  <div className="border-l-2 border-neon-red pl-4">
+                    <p className="text-neon-red font-heading text-sm uppercase mb-2">Failed Orders</p>
+                    <p className="text-white text-3xl font-display">{stats.failedOrders}</p>
+                  </div>
+                  <div className="border-l-2 border-neon-red pl-4">
+                    <p className="text-neon-red font-heading text-sm uppercase mb-2">Pending Events</p>
+                    <p className="text-white text-3xl font-display">{stats.pendingEventSubmissions}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "orders" && (
+              <div>
+                <h2 className="font-display text-4xl text-white mb-8">Merch Orders</h2>
+                {loading ? (
+                  <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 text-neon-red animate-spin" /></div>
+                ) : (
+                  <div className="space-y-4">
+                    {orders.map(order => (
+                      <div key={order.id} className="border border-white/10 bg-black/40 p-4 grid lg:grid-cols-[1fr_auto] gap-4">
+                        <div>
+                          <div className="flex flex-wrap items-center gap-3 mb-2">
+                            <h3 className="text-white font-heading text-lg">{order.public_id}</h3>
+                            <span className={`px-2 py-1 text-xs font-heading uppercase ${order.status_v2 === "failed" ? "bg-neon-red text-black" : "bg-white/10 text-white"}`}>{order.status_v2?.replace(/_/g, " ")}</span>
+                            <span className="px-2 py-1 text-xs font-heading uppercase bg-neon-red/20 text-neon-red">{order.fulfillment_status}</span>
+                          </div>
+                          <p className="text-gray-400 text-sm">{order.customer_name || "Customer"} • {order.customer_email || "No email"} • {order.currency?.toUpperCase()} {(order.total_cents / 100).toFixed(2)}</p>
+                          <p className="text-gray-500 text-sm mt-1">{order.merch_order_items?.map(item => `${item.quantity}x ${item.product_name} ${item.color || ""} ${item.size || ""}`).join(", ")}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 items-start">
+                          <a href={`/order/${order.public_id}`} className="px-3 py-2 border border-neon-red/50 text-neon-red font-heading text-sm uppercase">Status</a>
+                          <button onClick={() => resendOrderEmail(order.id)} className="px-3 py-2 border border-white/20 text-white hover:text-neon-red font-heading text-sm uppercase">Resend</button>
+                        </div>
+                      </div>
+                    ))}
+                    {orders.length === 0 && <p className="text-gray-400 text-center py-8">No orders yet</p>}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "rsvps" && (
+              <div>
+                <h2 className="font-display text-4xl text-white mb-8">RSVP Submissions</h2>
+                <div className="space-y-4">
+                  {rsvps.map(rsvp => (
+                    <div key={rsvp.id} className="border border-white/10 bg-black/40 p-4">
+                      <h3 className="text-white font-heading text-lg">{rsvp.name}</h3>
+                      <p className="text-gray-400 text-sm">{rsvp.email} • {rsvp.phone} • Event #{rsvp.event_id}</p>
+                      <p className="text-neon-red font-heading text-sm uppercase mt-1">{rsvp.package_type} / {rsvp.status || "pending"}</p>
+                    </div>
+                  ))}
+                  {rsvps.length === 0 && <p className="text-gray-400 text-center py-8">No RSVPs yet</p>}
+                </div>
+              </div>
+            )}
+
+            {activeTab === "submissions" && (
+              <div>
+                <h2 className="font-display text-4xl text-white mb-8">Event Submissions</h2>
+                <div className="space-y-4">
+                  {eventSubmissions.map(submission => (
+                    <div key={submission.id} className="border border-white/10 bg-black/40 p-4">
+                      <h3 className="text-white font-heading text-lg">{submission.event_title}</h3>
+                      <p className="text-gray-400 text-sm">{submission.event_date} • {submission.venue_name}</p>
+                      <p className="text-gray-500 text-sm">{submission.promoter_name} • {submission.promoter_email}</p>
+                      <p className="text-neon-red font-heading text-sm uppercase mt-1">{submission.status}</p>
+                    </div>
+                  ))}
+                  {eventSubmissions.length === 0 && <p className="text-gray-400 text-center py-8">No event submissions yet</p>}
                 </div>
               </div>
             )}
@@ -420,7 +573,7 @@ function EventFormModal({ event, authHeader, onClose, onSave }: { event: Event |
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const url = event ? `/api/admin/events?id=${event.id}` : "/api/admin/events";
+    const url = event ? `/api/admin?resource=events&id=${event.id}` : "/api/admin?resource=events";
     const method = event ? "PUT" : "POST";
     await fetch(url, {
       method,
@@ -476,7 +629,7 @@ function ArticleFormModal({ article, authHeader, onClose, onSave }: { article: A
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const url = article ? `/api/admin/articles?id=${article.id}` : "/api/admin/articles";
+    const url = article ? `/api/admin?resource=articles&id=${article.id}` : "/api/admin?resource=articles";
     const method = article ? "PUT" : "POST";
     await fetch(url, {
       method,
@@ -528,7 +681,7 @@ function MixtapeFormModal({ mixtape, authHeader, onClose, onSave }: { mixtape: M
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const url = mixtape ? `/api/admin/mixtapes?id=${mixtape.id}` : "/api/admin/mixtapes";
+    const url = mixtape ? `/api/admin?resource=mixtapes&id=${mixtape.id}` : "/api/admin?resource=mixtapes";
     const method = mixtape ? "PUT" : "POST";
     await fetch(url, {
       method,

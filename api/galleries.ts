@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { createUserClient } from './_lib/supabase';
+
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,7 +16,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const supabase = createUserClient();
+        const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+        const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabase = createClient(supabaseUrl!, supabaseAnonKey!);
 
         const { data: galleries, error } = await supabase
             .from('galleries')

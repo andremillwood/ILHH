@@ -33,6 +33,7 @@
   },
   "scripts": {
     "build": "tsc -b && vite build",
+    "content:events": "node scripts/events-csv-to-sql.mjs",
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview"

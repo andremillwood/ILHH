@@ -5,7 +5,7 @@ import { Search, X, Calendar, FileText, Music, Loader2 } from 'lucide-react';
 interface SearchResult {
     events: Array<{ id: number; title: string; theme: string; event_date: string }>;
     articles: Array<{ id: number; title: string; slug: string; excerpt: string }>;
-    mixtapes: Array<{ id: number; title: string; dj_name: string }>;
+    mixtapes: Array<{ id: number; title: string; slug?: string | null; dj_name: string }>;
 }
 
 export default function SearchBar() {
@@ -143,7 +143,7 @@ export default function SearchBar() {
                                             {results.mixtapes.map((mixtape) => (
                                                 <Link
                                                     key={mixtape.id}
-                                                    to={`/mixtapes`}
+                                                    to={`/mixtapes/${mixtape.slug || mixtape.id}`}
                                                     onClick={() => setIsOpen(false)}
                                                     className="block p-2 hover:bg-neon-red/10 transition"
                                                 >

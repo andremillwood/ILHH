@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth, useAuthHeader } from "@/lib/AuthContext";
-import { Sparkles, Users, Calendar, Star, Edit2, X } from "lucide-react";
+import { Sparkles, Users, Calendar, Star, Edit2, X, Mail } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
 import type { Member } from "@/shared/types";
@@ -112,18 +112,23 @@ export default function Membership() {
         <div className="pt-32 pb-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="font-display text-6xl md:text-8xl mb-6 neon-text-simple animate-glow-pulse">
-              MEMBERSHIP
+              NEWSLETTER & MEMBERSHIP
             </h1>
             <p className="text-xl text-gray-300 mb-12 font-heading">
-              Join the I Luv Hip Hop community for exclusive benefits
+              Subscribe to This Is Hip Hop Caribbean and join the I Luv Hip Hop community for event alerts, RSVP access, and member benefits.
             </p>
 
             <div className="neon-border bg-black/80 backdrop-blur-md p-12">
               <h2 className="font-display text-4xl text-white mb-8">
-                UNLOCK EXCLUSIVE ACCESS
+                STAY CONNECTED TO THE CULTURE
               </h2>
 
               <div className="grid md:grid-cols-2 gap-6 mb-12 text-left">
+                <div className="border-l-2 border-neon-red pl-4">
+                  <Mail className="w-8 h-8 text-neon-red mb-2" />
+                  <h3 className="font-heading text-lg text-white mb-2">Newsletter</h3>
+                  <p className="text-gray-400">Weekly drops on I Luv Hip Hop, promoted events, DJs, and culture features</p>
+                </div>
                 <div className="border-l-2 border-neon-red pl-4">
                   <Sparkles className="w-8 h-8 text-neon-red mb-2" />
                   <h3 className="font-heading text-lg text-white mb-2">2-4-1 Specials</h3>
@@ -132,12 +137,12 @@ export default function Membership() {
                 <div className="border-l-2 border-neon-red pl-4">
                   <Star className="w-8 h-8 text-neon-red mb-2" />
                   <h3 className="font-heading text-lg text-white mb-2">Priority RSVP</h3>
-                  <p className="text-gray-400">First access to table reservations</p>
+                  <p className="text-gray-400">First access to RSVP and table reservations for designated events</p>
                 </div>
                 <div className="border-l-2 border-neon-red pl-4">
                   <Calendar className="w-8 h-8 text-neon-red mb-2" />
-                  <h3 className="font-heading text-lg text-white mb-2">Event Access</h3>
-                  <p className="text-gray-400">Early info on special events</p>
+                  <h3 className="font-heading text-lg text-white mb-2">Event Discovery</h3>
+                  <p className="text-gray-400">Early info on flagship and promoted hip hop events</p>
                 </div>
                 <div className="border-l-2 border-neon-red pl-4">
                   <Users className="w-8 h-8 text-neon-red mb-2" />
