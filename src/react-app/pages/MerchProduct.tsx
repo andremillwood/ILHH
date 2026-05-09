@@ -33,6 +33,7 @@ export default function MerchProduct() {
   const relatedProducts = merchProducts
     .filter((item) => item.category === product.category && item.id !== product.id)
     .slice(0, 3);
+  const selectedImage = product.images.find((image) => image.color === selectedColor) || product.images[0];
 
   return (
     <div className="min-h-screen bg-black graffiti-texture">
@@ -47,11 +48,15 @@ export default function MerchProduct() {
           <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-10 mt-8">
             <div className={`neon-border bg-gradient-to-br ${product.imageClass} min-h-[560px] relative flex items-center justify-center overflow-hidden`}>
               {product.badge && (
-                <span className="absolute top-6 left-6 px-4 py-2 bg-neon-red text-black font-heading uppercase tracking-wider text-xs">
+                <span className="absolute top-6 left-6 z-10 px-4 py-2 bg-neon-red text-black font-heading uppercase tracking-wider text-xs">
                   {product.badge}
                 </span>
               )}
-              <Package className="w-40 h-40 text-white/80" />
+              <img
+                src={selectedImage.url}
+                alt={selectedImage.alt}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
                 <p className="font-heading text-white uppercase tracking-[0.3em]">This Is Hip Hop Caribbean</p>
               </div>

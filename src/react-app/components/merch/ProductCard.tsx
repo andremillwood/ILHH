@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Package } from "lucide-react";
 import { useCart } from "@/react-app/lib/CartContext";
 import type { MerchProduct } from "@/react-app/lib/merchProducts";
 
@@ -8,16 +7,22 @@ export default function ProductCard({ product }: { product: MerchProduct }) {
   const { addItem } = useCart();
   const [selectedColor, setSelectedColor] = useState(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+  const selectedImage = product.images.find((image) => image.color === selectedColor) || product.images[0];
 
   return (
     <article className="neon-border bg-black/80 backdrop-blur-md overflow-hidden hover:neon-glow transition">
-      <Link to={`/merch/product/${product.id}`} className={`aspect-square bg-gradient-to-br ${product.imageClass} relative flex items-center justify-center group`}>
+      <Link to={`/merch/product/${product.id}`} className={`aspect-square bg-gradient-to-br ${product.imageClass} relative flex items-center justify-center group overflow-hidden`}>
         {product.badge && (
-          <span className="absolute top-4 left-4 px-3 py-1 bg-neon-red text-black font-heading uppercase tracking-wider text-xs">
+          <span className="absolute top-4 left-4 z-10 px-3 py-1 bg-neon-red text-black font-heading uppercase tracking-wider text-xs">
             {product.badge}
           </span>
         )}
-        <Package className="w-24 h-24 text-white/80 group-hover:scale-110 transition-transform" />
+        <img
+          src={selectedImage.url}
+          alt={selectedImage.alt}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
       </Link>
       <div className="p-6">
         <div className="flex items-start justify-between gap-4 mb-3">

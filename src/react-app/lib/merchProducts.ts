@@ -8,6 +8,12 @@ export interface MerchVariant {
   stripePriceId?: string;
 }
 
+export interface MerchProductImage {
+  color: string;
+  url: string;
+  alt: string;
+}
+
 export interface MerchProduct {
   id: string;
   name: string;
@@ -19,6 +25,7 @@ export interface MerchProduct {
   colors: string[];
   sizes: string[];
   imageClass: string;
+  images: MerchProductImage[];
   variants: MerchVariant[];
   badge?: string;
 }
@@ -68,6 +75,23 @@ export const merchProducts: MerchProduct[] = [
     colors: ["Black", "White", "Red"],
     sizes: ["S", "M", "L", "XL", "2XL"],
     imageClass: "from-neon-red/40 via-black to-white/10",
+    images: [
+      {
+        color: "Black",
+        url: "https://files.cdn.printful.com/files/054/0545e729fcfe05193a95b1a6a35522b4_preview.png",
+        alt: "ILHH Unisex Organic Sweatshirt in Black",
+      },
+      {
+        color: "Red",
+        url: "https://files.cdn.printful.com/files/c4c/c4c2c634bf9558ee5f35ab146428ce4f_preview.png",
+        alt: "ILHH Unisex Organic Sweatshirt in Red",
+      },
+      {
+        color: "White",
+        url: "https://files.cdn.printful.com/files/ef6/ef650f6077a51fb3ff2c3cb6968fc08c_preview.png",
+        alt: "ILHH Unisex Organic Sweatshirt in White",
+      },
+    ],
     badge: "Flagship",
     variants: buildPrintfulVariants("ilhh-organic-sweatshirt", ["S", "M", "L", "XL", "2XL"], ["Black", "White", "Red"]),
   },

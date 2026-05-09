@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Crown, Package, Shirt, Star, Truck } from "lucide-react";
+import { Crown, Shirt, Star, Truck } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
 import ProductCard from "@/react-app/components/merch/ProductCard";
@@ -55,7 +55,11 @@ export default function Merch() {
                 <div className="absolute top-6 left-6 px-4 py-2 bg-neon-red text-black font-heading uppercase tracking-wider text-xs">
                   Featured Drop
                 </div>
-                <Package className="w-36 h-36 text-white/80" />
+                <img
+                  src={featuredProduct.images[0].url}
+                  alt={featuredProduct.images[0].alt}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
                 <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
                   <p className="font-display text-4xl text-white">{featuredProduct.name}</p>
                   <p className="text-neon-red font-heading">${featuredProduct.price.toFixed(2)}</p>
