@@ -37,7 +37,16 @@ Required fulfillment env vars:
 ```
 PRINTFUL_API_KEY=...
 PRINTFUL_STORE_ID=...
+CRON_SECRET=...
 ```
+
+Printful product sync:
+
+- Vercel runs `/api/admin` daily at 09:00 UTC with `Authorization: Bearer $CRON_SECRET`.
+- The cron pulls synced Printful products and variants into `merch_products` and `merch_product_variants`.
+- The public store reads `/api/public?resource=merch`, and checkout validates against the synced catalog.
+- Run `supabase/migrations/20260509_printful_product_sync.sql` before enabling the cron in production.
+- To trigger manually, call the endpoint with `Authorization: Bearer $CRON_SECRET`.
 
 Required transactional email env vars:
 ```

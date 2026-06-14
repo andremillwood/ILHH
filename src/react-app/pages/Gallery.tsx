@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Camera, Instagram, ExternalLink, X } from "lucide-react";
+import { Camera, Download, Instagram, ExternalLink, X } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
 
 interface Gallery {
   id: number;
+  title: string | null;
   partner_name: string;
   partner_logo_url: string | null;
   partner_instagram: string | null;
@@ -12,6 +13,17 @@ interface Gallery {
   description: string | null;
   featured_image_url: string | null;
   is_featured: number;
+  source_label?: string | null;
+  allow_download?: boolean | null;
+  events?: { title?: string; event_date?: string; venue_name?: string } | null;
+  event_gallery_images?: Array<{
+    id: number;
+    image_url: string;
+    thumbnail_url: string | null;
+    caption: string | null;
+    photographer_name: string | null;
+    downloadable: boolean | null;
+  }>;
 }
 
 export default function Gallery() {
@@ -94,8 +106,8 @@ export default function Gallery() {
 
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-heading text-xl text-white">
-                        {gallery.partner_name}
+                                <h3 className="font-heading text-xl text-white">
+                        {gallery.title || gallery.partner_name}
                       </h3>
                       {gallery.partner_instagram && (
                         <a
@@ -114,6 +126,26 @@ export default function Gallery() {
                       <p className="text-gray-400 text-sm font-heading mb-4">
                         {gallery.description}
                       </p>
+                    )}
+                    {gallery.events?.title && (
+                      <p className="text-neon-red text-xs font-heading uppercase mb-4">
+                        {gallery.events.title} {gallery.events.event_date ? `/ ${new Date(gallery.events.event_date).toLocaleDateString()}` : ""}
+                      </p>
+                    )}
+
+                    {gallery.event_gallery_images && gallery.event_gallery_images.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2 mb-4">
+                        {gallery.event_gallery_images.slice(0, 6).map((image) => (
+                          <button
+                            key={image.id}
+                            type="button"
+                            onClick={() => setSelectedImage({ url: image.image_url, partner: image.caption || gallery.title || gallery.partner_name })}
+                            className="aspect-square bg-black overflow-hidden border border-white/10 hover:border-neon-red"
+                          >
+                            <img src={image.thumbnail_url || image.image_url} alt={image.caption || gallery.partner_name} className="w-full h-full object-cover" />
+                          </button>
+                        ))}
+                      </div>
                     )}
 
                     {gallery.gallery_url && (
@@ -157,6 +189,9 @@ export default function Gallery() {
             <p className="text-white font-heading text-center mt-4 text-xl">
               {selectedImage.partner}
             </p>
+            <a href={selectedImage.url} download className="mx-auto mt-4 flex w-fit items-center gap-2 px-5 py-3 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading uppercase">
+              <Download className="w-4 h-4" /> Download Image
+            </a>
           </div>
         </div>
       )}

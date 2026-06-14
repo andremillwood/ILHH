@@ -44,6 +44,80 @@ export const MemberSchema = z.object({
   bio: z.string().nullable(),
   location: z.string().nullable(),
   avatar_url: z.string().nullable(),
+  is_public: z.boolean().nullable().optional(),
+  profile_visibility: z.string().nullable().optional(),
+  member_role: z.string().nullable().optional(),
+  discovery_city: z.string().nullable().optional(),
+  interest_tags: z.string().nullable().optional(),
+  onboarding_completed: z.boolean().nullable().optional(),
+  onboarding_completed_at: z.string().nullable().optional(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const CreatorProfileSchema = z.object({
+  id: z.number(),
+  member_id: z.number().nullable(),
+  profile_type: z.enum(["dj", "artist", "promoter", "venue", "community"]),
+  status: z.enum(["draft", "pending", "approved", "rejected", "suspended"]),
+  display_name: z.string(),
+  slug: z.string(),
+  tagline: z.string().nullable(),
+  bio: z.string().nullable(),
+  city: z.string().nullable(),
+  country: z.string().nullable(),
+  avatar_url: z.string().nullable(),
+  cover_url: z.string().nullable(),
+  instagram_handle: z.string().nullable(),
+  tiktok_handle: z.string().nullable(),
+  youtube_url: z.string().nullable(),
+  soundcloud_url: z.string().nullable(),
+  spotify_url: z.string().nullable(),
+  website_url: z.string().nullable(),
+  booking_email: z.string().nullable(),
+  booking_phone: z.string().nullable(),
+  specialties: z.string().nullable(),
+  notable_credits: z.string().nullable(),
+  equipment_or_services: z.string().nullable(),
+  is_featured: z.boolean().nullable(),
+  is_verified: z.boolean().nullable(),
+  review_notes: z.string().nullable(),
+  reviewed_at: z.string().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const MusicPlaylistSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  slug: z.string(),
+  description: z.string().nullable(),
+  curator_name: z.string().nullable(),
+  playlist_type: z.string(),
+  mood: z.string().nullable(),
+  platform: z.string(),
+  external_url: z.string(),
+  embed_url: z.string().nullable(),
+  cover_url: z.string().nullable(),
+  tags: z.string().nullable(),
+  is_featured: z.boolean().nullable(),
+  is_published: z.boolean().nullable(),
+  published_at: z.string().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export const PlaylistSuggestionSchema = z.object({
+  id: z.number(),
+  member_id: z.number().nullable(),
+  playlist_id: z.number().nullable(),
+  track_title: z.string(),
+  artist_name: z.string(),
+  platform_url: z.string().nullable(),
+  reason: z.string().nullable(),
+  suggested_for: z.string().nullable(),
+  status: z.string(),
+  vote_count: z.number().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -109,6 +183,10 @@ export const GallerySchema = z.object({
   partner_instagram: z.string().nullable(),
   gallery_url: z.string().nullable(),
   event_id: z.number().nullable(),
+  title: z.string().nullable().optional(),
+  source_label: z.string().nullable().optional(),
+  status: z.string().nullable().optional(),
+  allow_download: z.boolean().nullable().optional(),
   description: z.string().nullable(),
   featured_image_url: z.string().nullable(),
   is_featured: z.number(),
@@ -157,6 +235,9 @@ export type Event = z.infer<typeof EventSchema>;
 export type DJ = z.infer<typeof DJSchema>;
 export type EventWithDJs = z.infer<typeof EventWithDJsSchema>;
 export type Member = z.infer<typeof MemberSchema>;
+export type CreatorProfile = z.infer<typeof CreatorProfileSchema>;
+export type MusicPlaylist = z.infer<typeof MusicPlaylistSchema>;
+export type PlaylistSuggestion = z.infer<typeof PlaylistSuggestionSchema>;
 export type Rsvp = z.infer<typeof RsvpSchema>;
 export type Article = z.infer<typeof ArticleSchema>;
 export type Mixtape = z.infer<typeof MixtapeSchema>;

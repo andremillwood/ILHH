@@ -56,7 +56,7 @@ export default function Events() {
             HIP HOP EVENTS
           </h1>
           <p className="text-center text-xl text-gray-400 mb-12 font-heading max-w-3xl mx-auto">
-            This Is Hip Hop Caribbean promotes the flagship I Luv Hip Hop weekly event and trusted nights where DJs and promoters are representing hip hop across the region.
+            This Is Hip Hop Caribbean promotes I Luv Hip Hop Weekly and trusted nights where DJs and promoters are representing hip hop across the region.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link to="/submit-event" className="px-6 py-3 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading uppercase tracking-wider text-center">
@@ -119,7 +119,7 @@ export default function Events() {
                 const [y, m, d] = event.event_date.split('-').map(Number);
                 const eventDate = new Date(y, m - 1, d);
                 const isPast = eventDate < now;
-                const isDesignated = isDesignatedRsvpEvent(event.title);
+                const isDesignated = isDesignatedRsvpEvent(event);
 
                 return (
                   <div
@@ -148,6 +148,11 @@ export default function Events() {
                               </>
                             )}
                           </span>
+                          {isDesignated && (
+                            <span className="ml-2 inline-flex items-center px-3 py-1 bg-neon-red/10 border border-neon-red/40 text-neon-red text-xs font-heading uppercase tracking-wider">
+                              RSVP perks, drink deals and table bookings
+                            </span>
+                          )}
                           <h2 className="font-display text-4xl md:text-5xl text-white mb-2">
                             <Link to={`/events/${event.id}`} className="hover:text-neon-red transition">
                               {event.title}
@@ -175,9 +180,15 @@ export default function Events() {
                               })}
                             </span>
                           </div>
-                          <div className="flex items-center text-white">
-                            <MapPin className="w-5 h-5 mr-3 text-neon-red" />
-                            <span className="font-heading">{event.venue_name} - {event.venue_address}</span>
+                          <div className={`border p-4 ${isDesignated ? "border-neon-red bg-neon-red/10" : "border-white/10 bg-white/[0.03]"}`}>
+                            <div className="flex items-start text-white">
+                              <MapPin className="w-6 h-6 mr-3 mt-1 text-neon-red flex-shrink-0" />
+                              <div>
+                                <p className="text-xs font-heading uppercase tracking-[0.25em] text-neon-red mb-1">Venue</p>
+                                <p className="font-heading text-2xl text-white">{event.venue_name || (isDesignated ? "Dulce Lounge" : "Venue TBA")}</p>
+                                <p className="font-heading text-gray-300">{event.venue_address || (isDesignated ? "22 Barbican Road" : "Address TBA")}</p>
+                              </div>
+                            </div>
                           </div>
                         </div>
 

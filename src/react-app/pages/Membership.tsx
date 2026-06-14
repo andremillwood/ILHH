@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useAuth, useAuthHeader } from "@/lib/AuthContext";
-import { Sparkles, Users, Calendar, Star, Edit2, X, Mail } from "lucide-react";
+import { Sparkles, Users, Calendar, Star, Edit2, X, Mail, Send } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
+import SocialCtas from "@/react-app/components/SocialCtas";
 import type { Member } from "@/shared/types";
 
 export default function Membership() {
@@ -24,6 +25,12 @@ export default function Membership() {
     favorite_genre: "",
     bio: "",
     location: "",
+    is_public: true,
+    profile_visibility: "public",
+    member_role: "fan",
+    discovery_city: "",
+    interest_tags: "",
+    onboarding_completed: false,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -50,6 +57,12 @@ export default function Membership() {
               favorite_genre: data.favorite_genre || "",
               bio: data.bio || "",
               location: data.location || "",
+              is_public: data.is_public ?? true,
+              profile_visibility: data.profile_visibility || "public",
+              member_role: data.member_role || "fan",
+              discovery_city: data.discovery_city || data.location || "",
+              interest_tags: data.interest_tags || data.favorite_genre || "",
+              onboarding_completed: data.onboarding_completed || false,
             });
           }
           setLoading(false);
@@ -79,7 +92,7 @@ export default function Membership() {
           "Content-Type": "application/json",
           Authorization: authHeader
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, onboarding_completed: true }),
       });
 
       if (!response.ok) {
@@ -90,7 +103,7 @@ export default function Membership() {
       if (data.success || data.member) {
         window.location.reload();
       }
-    } catch (err) {
+    } catch {
       setError("Failed to save membership. Please try again.");
       setSubmitting(false);
     }
@@ -142,7 +155,7 @@ export default function Membership() {
                 <div className="border-l-2 border-neon-red pl-4">
                   <Calendar className="w-8 h-8 text-neon-red mb-2" />
                   <h3 className="font-heading text-lg text-white mb-2">Event Discovery</h3>
-                  <p className="text-gray-400">Early info on flagship and promoted hip hop events</p>
+                  <p className="text-gray-400">Early info on I Luv Hip Hop Weekly and promoted hip hop events</p>
                 </div>
                 <div className="border-l-2 border-neon-red pl-4">
                   <Users className="w-8 h-8 text-neon-red mb-2" />
@@ -157,6 +170,10 @@ export default function Membership() {
               >
                 Sign In to Join
               </button>
+              <div className="mt-10 border-t border-white/10 pt-8">
+                <h3 className="font-heading text-white uppercase tracking-wider mb-4">Follow The Community</h3>
+                <SocialCtas />
+              </div>
             </div>
           </div>
         </div>
@@ -258,7 +275,7 @@ export default function Membership() {
               )}
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6">
               <div className="neon-border bg-black/80 backdrop-blur-md p-6">
                 <Sparkles className="w-8 h-8 text-neon-red mb-3" />
                 <h3 className="font-heading text-xl text-white mb-2">This Week's Special</h3>
@@ -268,6 +285,11 @@ export default function Membership() {
                 <Calendar className="w-8 h-8 text-neon-red mb-3" />
                 <h3 className="font-heading text-xl text-white mb-2">Next Event</h3>
                 <p className="text-gray-400">Thursday - Check the calendar</p>
+              </div>
+
+              <div className="border-t border-neon-red/30 pt-8">
+                <h3 className="font-display text-3xl text-white mb-6 text-center">Creator Profile</h3>
+                <CreatorProfileSubmission authHeader={authHeader!} />
               </div>
             </div>
           </div>
@@ -379,6 +401,29 @@ export default function Membership() {
                     </div>
                   </div>
 
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white font-heading mb-2">Discovery City</label>
+                      <input
+                        type="text"
+                        placeholder="Kingston, Montego Bay, Portmore..."
+                        value={formData.discovery_city}
+                        onChange={(e) => setFormData({ ...formData, discovery_city: e.target.value })}
+                        className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red focus:outline-none placeholder-gray-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white font-heading mb-2">Home Interests</label>
+                      <input
+                        type="text"
+                        placeholder="dancehall, trap, events, interviews"
+                        value={formData.interest_tags}
+                        onChange={(e) => setFormData({ ...formData, interest_tags: e.target.value })}
+                        className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red focus:outline-none placeholder-gray-600"
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-white font-heading mb-2">Bio</label>
                     <textarea
@@ -388,6 +433,35 @@ export default function Membership() {
                       placeholder="Tell us about yourself..."
                       className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red focus:outline-none placeholder-gray-600"
                     />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white font-heading mb-2">Member Role</label>
+                      <select
+                        value={formData.member_role}
+                        onChange={(e) => setFormData({ ...formData, member_role: e.target.value })}
+                        className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red focus:outline-none"
+                      >
+                        <option value="fan">Fan / Member</option>
+                        <option value="dj">DJ</option>
+                        <option value="artist">Artist</option>
+                        <option value="promoter">Promoter</option>
+                        <option value="venue">Venue</option>
+                        <option value="media">Media / Creator</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-white font-heading mb-2">Community Visibility</label>
+                      <select
+                        value={formData.profile_visibility}
+                        onChange={(e) => setFormData({ ...formData, profile_visibility: e.target.value })}
+                        className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red focus:outline-none"
+                      >
+                        <option value="public">Public community card</option>
+                        <option value="private">Private member profile</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -475,5 +549,94 @@ export default function Membership() {
 
       <Footer />
     </div>
+  );
+}
+
+function CreatorProfileSubmission({ authHeader }: { authHeader: string }) {
+  const [form, setForm] = useState({
+    profile_type: "dj",
+    display_name: "",
+    tagline: "",
+    bio: "",
+    city: "",
+    country: "Jamaica",
+    avatar_url: "",
+    cover_url: "",
+    instagram_handle: "",
+    tiktok_handle: "",
+    youtube_url: "",
+    soundcloud_url: "",
+    spotify_url: "",
+    website_url: "",
+    booking_email: "",
+    booking_phone: "",
+    specialties: "",
+    notable_credits: "",
+    equipment_or_services: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const submitProfile = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setSubmitting(true);
+    setMessage("");
+    try {
+      const res = await fetch("/api/members?action=creator_profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: authHeader },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error("Profile submission failed");
+      setMessage("Profile submitted for review. It will appear in the directory after approval.");
+      setForm({ ...form, display_name: "", tagline: "", bio: "", specialties: "", notable_credits: "", equipment_or_services: "" });
+    } catch {
+      setMessage("Could not submit the profile. Check the required fields and try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={submitProfile} className="space-y-4">
+      <p className="text-gray-400 font-heading text-center">
+        DJs, artists, promoters, venues, and community builders can submit a public creator profile for approval.
+      </p>
+      <div className="grid md:grid-cols-2 gap-4">
+        <select value={form.profile_type} onChange={(e) => setForm({ ...form, profile_type: e.target.value })} className="px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none">
+          <option value="dj">DJ</option>
+          <option value="artist">Artist</option>
+          <option value="promoter">Promoter</option>
+          <option value="venue">Venue</option>
+          <option value="community">Community / Media</option>
+        </select>
+        <input required value={form.display_name} onChange={(e) => setForm({ ...form, display_name: e.target.value })} placeholder="Public name *" className="px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+      </div>
+      <input value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} placeholder="Short tagline" className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+      <textarea required value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={4} placeholder="Bio, mission, or profile story *" className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+      <div className="grid md:grid-cols-2 gap-4">
+        <input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="City" className="px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+        <input value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} placeholder="Country" className="px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+      </div>
+      <div className="grid md:grid-cols-2 gap-4">
+        <input value={form.instagram_handle} onChange={(e) => setForm({ ...form, instagram_handle: e.target.value })} placeholder="Instagram handle" className="px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+        <input value={form.booking_email} onChange={(e) => setForm({ ...form, booking_email: e.target.value })} placeholder="Booking email" className="px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+      </div>
+      <textarea value={form.specialties} onChange={(e) => setForm({ ...form, specialties: e.target.value })} rows={2} placeholder="Specialties, styles, or genres" className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+      <textarea value={form.notable_credits} onChange={(e) => setForm({ ...form, notable_credits: e.target.value })} rows={2} placeholder="Notable credits, releases, events, venues, collaborations" className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+      <details className="border border-white/10 p-4">
+        <summary className="text-neon-red font-heading cursor-pointer">Optional links and media</summary>
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
+          {(["avatar_url", "cover_url", "website_url", "youtube_url", "soundcloud_url", "spotify_url", "tiktok_handle", "booking_phone"] as const).map((key) => (
+            <input key={key} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} placeholder={key.replace(/_/g, " ")} className="px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+          ))}
+        </div>
+        <textarea value={form.equipment_or_services} onChange={(e) => setForm({ ...form, equipment_or_services: e.target.value })} rows={2} placeholder="Services, equipment, venue details, or packages" className="w-full mt-4 px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red outline-none placeholder-gray-600" />
+      </details>
+      {message && <p className="text-gray-300 font-heading text-center">{message}</p>}
+      <button disabled={submitting} className="w-full px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading uppercase tracking-wider disabled:opacity-50 flex items-center justify-center gap-2">
+        {submitting ? "Submitting..." : <><Send className="w-4 h-4" /> Submit Creator Profile</>}
+      </button>
+    </form>
   );
 }

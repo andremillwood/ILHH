@@ -5,10 +5,12 @@ import Footer from "@/react-app/components/Footer";
 import ProductCard from "@/react-app/components/merch/ProductCard";
 import CartPanel from "@/react-app/components/merch/CartPanel";
 import { useCart } from "@/react-app/lib/CartContext";
-import { merchCategories, merchProducts } from "@/react-app/lib/merchProducts";
+import { merchCategories } from "@/react-app/lib/merchProducts";
+import { useMerchCatalog } from "@/react-app/lib/useMerchCatalog";
 
 export default function Merch() {
   const cart = useCart();
+  const { products: merchProducts } = useMerchCatalog();
   const featuredProduct = merchProducts[0];
 
   return (

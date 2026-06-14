@@ -235,6 +235,83 @@ export async function submitOrderToPrintful(supabase: SupabaseClient, order: any
     return updated;
 }
 
+function normalizePrintfulLifecycle(printfulStatus?: string | null, shipments?: any[]) {
+    const status = String(printfulStatus || '').toLowerCase();
+    const hasTracking = (shipments || []).some((shipment) => shipment?.tracking_number || shipment?.tracking_url);
+
+    if (status.includes('delivered')) return 'delivered';
+    if (hasTracking || status.includes('shipped') || status.includes('fulfilled')) return 'shipped';
+    if (status.includes('inprocess') || status.includes('in_process') || status.includes('pending')) return 'in_fulfillment';
+    if (status.includes('canceled') || status.includes('cancelled')) return 'cancelled';
+    if (status.includes('failed')) return 'failed';
+    return 'submitted_to_printful';
+}
+
+export async function syncPrintfulOrderStatus(supabase: SupabaseClient, order: any) {
+    const printfulApiKey = process.env.PRINTFUL_API_KEY;
+    if (!printfulApiKey) throw new Error('PRINTFUL_API_KEY is not configured');
+    if (!order.printful_order_id) throw new Error('Order has no Printful order ID');
+
+    const response = await fetch(`https://api.printful.com/orders/${order.printful_order_id}`, {
+        headers: {
+            Authorization: `Bearer ${printfulApiKey}`,
+            ...(process.env.PRINTFUL_STORE_ID ? { 'X-PF-Store-Id': process.env.PRINTFUL_STORE_ID } : {}),
+        },
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || 'Could not fetch Printful order');
+
+    const result = data.result || {};
+    const shipments = result.shipments || result.shipment || [];
+    const shipmentList = Array.isArray(shipments) ? shipments : [shipments].filter(Boolean);
+    const firstShipment = shipmentList.find((shipment: any) => shipment?.tracking_number || shipment?.tracking_url) || shipmentList[0] || {};
+    const lifecycle = normalizePrintfulLifecycle(result.status, shipmentList);
+    const now = new Date().toISOString();
+
+    const patch: Record<string, unknown> = {
+        status: lifecycle,
+        status_v2: lifecycle,
+        fulfillment_status: result.status || lifecycle,
+        tracking_number: firstShipment.tracking_number || firstShipment.tracking || order.tracking_number || null,
+        tracking_url: firstShipment.tracking_url || firstShipment.tracking_url_provider || order.tracking_url || null,
+        carrier: firstShipment.carrier || firstShipment.service || order.carrier || null,
+        updated_at: now,
+    };
+
+    if (lifecycle === 'shipped' && !order.shipped_at) patch.shipped_at = now;
+    if (lifecycle === 'delivered' && !order.delivered_at) patch.delivered_at = now;
+    if (lifecycle === 'cancelled' && !order.cancelled_at) patch.cancelled_at = now;
+    if (lifecycle === 'failed' && !order.failed_at) patch.failed_at = now;
+
+    const { data: updated, error } = await supabase
+        .from('merch_orders')
+        .update(patch)
+        .eq('id', order.id)
+        .select('*, merch_order_items (*)')
+        .single();
+
+    if (error) throw error;
+    await logOrderEvent(supabase, order.id, 'printful_status_synced', `Printful status synced: ${result.status || lifecycle}.`, 'info', result);
+
+    if ((lifecycle === 'shipped' || lifecycle === 'delivered') && updated.customer_email && (patch.tracking_number || patch.tracking_url)) {
+        await sendBrandedEmail({
+            to: updated.customer_email,
+            subject: lifecycle === 'delivered' ? 'Your ILHH order was delivered' : 'Your ILHH order shipped',
+            preview: 'Tracking information is available for your merch order.',
+            from: emailSenders.orders,
+            eyebrow: lifecycle === 'delivered' ? 'Delivered' : 'Shipped',
+            title: lifecycle === 'delivered' ? 'Order delivered' : 'Your order is on the way',
+            intro: lifecycle === 'delivered'
+                ? 'Printful reports your merch order as delivered. If anything looks off, contact support so we can review it quickly.'
+                : 'Your merch order has shipped. Use the tracking details below to follow the delivery.',
+            sections: [{ title: 'Tracking', rows: [['Order', updated.public_id], ['Carrier', updated.carrier], ['Tracking', updated.tracking_url || updated.tracking_number]] }],
+            action: { label: 'View Order Status', url: siteUrl(`/order/${updated.public_id}`) },
+        });
+    }
+
+    return updated;
+}
+
 export async function markOrderCancelled(supabase: SupabaseClient, stripeSessionId: string, reason = 'Checkout expired or cancelled.') {
     const { data: order, error } = await supabase
         .from('merch_orders')

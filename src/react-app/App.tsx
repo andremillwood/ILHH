@@ -6,11 +6,13 @@ import AuthCallbackPage from "@/react-app/pages/AuthCallback";
 import EventsPage from "@/react-app/pages/Events";
 import EventDetailPage from "@/react-app/pages/EventDetail";
 import MembershipPage from "@/react-app/pages/Membership";
+import DashboardPage from "@/react-app/pages/Dashboard";
 import RsvpPage from "@/react-app/pages/Rsvp";
 import ArticlesPage from "@/react-app/pages/Articles";
 import ArticleDetailPage from "@/react-app/pages/ArticleDetail";
 import CommunityPage from "@/react-app/pages/Community";
 import MixtapesPage from "@/react-app/pages/Mixtapes";
+import PlaylistsPage from "@/react-app/pages/Playlists";
 import MixtapeDetailPage from "@/react-app/pages/MixtapeDetail";
 import MixtapeUploadPage from "@/react-app/pages/MixtapeUpload";
 import GalleryPage from "@/react-app/pages/Gallery";
@@ -24,6 +26,8 @@ import SubmitEventPage from "@/react-app/pages/SubmitEvent";
 import AdminPage from "@/react-app/pages/Admin";
 import OrderStatusPage from "@/react-app/pages/OrderStatus";
 import PolicyPage from "@/react-app/pages/Policy";
+import SupportPage from "@/react-app/pages/Support";
+import SubmitArticlePage from "@/react-app/pages/SubmitArticle";
 
 export default function App() {
   return (
@@ -36,23 +40,37 @@ export default function App() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/:eventId" element={<EventDetailPage />} />
             <Route path="/membership" element={<MembershipPage />} />
+            <Route path="/home" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/rsvp/:eventId" element={<RsvpPage />} />
             <Route path="/articles" element={<ArticlesPage />} />
+            <Route path="/stories" element={<ArticlesPage />} />
             <Route path="/articles/:slug" element={<ArticleDetailPage />} />
+            <Route path="/stories/:slug" element={<ArticleDetailPage />} />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/mixtapes" element={<MixtapesPage />} />
+            <Route path="/music" element={<MixtapesPage />} />
+            <Route path="/playlists" element={<PlaylistsPage />} />
             <Route path="/mixtapes/upload" element={<MixtapeUploadPage />} />
+            <Route path="/music/upload" element={<MixtapeUploadPage />} />
             <Route path="/mixtapes/:mixSlug" element={<MixtapeDetailPage />} />
+            <Route path="/music/:mixSlug" element={<MixtapeDetailPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/happy-hour" element={<HappyHourPage />} />
             <Route path="/merch" element={<MerchPage />} />
             <Route path="/merch/category/:categoryId" element={<MerchCategoryPage />} />
             <Route path="/merch/product/:productId" element={<MerchProductPage />} />
             <Route path="/profiles" element={<ProfilesPage />} />
+            <Route path="/directory" element={<ProfilesPage />} />
             <Route path="/profiles/:profileSlug" element={<ProfileDetailPage />} />
+            <Route path="/directory/:profileSlug" element={<ProfileDetailPage />} />
             <Route path="/submit-event" element={<SubmitEventPage />} />
+            <Route path="/submit-article" element={<SubmitArticlePage />} />
             <Route path="/order/:orderId" element={<OrderStatusPage />} />
+            <Route path="/terms" element={<PolicyPage fixedSlug="terms" />} />
+            <Route path="/privacy" element={<PolicyPage fixedSlug="privacy" />} />
             <Route path="/policy/:policySlug" element={<PolicyPage />} />
+            <Route path="/support" element={<SupportPage />} />
             <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </Router>

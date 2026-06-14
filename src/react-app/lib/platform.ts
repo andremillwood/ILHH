@@ -18,9 +18,21 @@ export const formatEventDate = (eventDate: string) => {
   });
 };
 
-export const isDesignatedRsvpEvent = (title: string) => {
-  const normalizedTitle = title.toLowerCase();
-  return normalizedTitle.includes("i luv hip hop") || normalizedTitle.includes("own the night");
+export const isDesignatedRsvpEvent = (eventOrTitle: string | Pick<EventWithDJs, "title" | "theme" | "venue_name" | "event_date">) => {
+  if (typeof eventOrTitle === "string") {
+    const normalizedTitle = eventOrTitle.toLowerCase();
+    return normalizedTitle.includes("i luv hip hop") || normalizedTitle.includes("own the night") || normalizedTitle.includes("shutdown") || normalizedTitle.includes("rave mode");
+  }
+
+  const haystack = [eventOrTitle.title, eventOrTitle.theme, eventOrTitle.venue_name].filter(Boolean).join(" ").toLowerCase();
+  const [year, month, day] = eventOrTitle.event_date.split("-").map(Number);
+  const eventDate = new Date(year, month - 1, day);
+  const isThursday = eventDate.getDay() === 4;
+  const isDulce = haystack.includes("dulce");
+  const isIlhhSeries = haystack.includes("i luv hip hop") || haystack.includes("global bass") || haystack.includes("breeze") || haystack.includes("hip-so") || haystack.includes("love songs");
+  const explicitlyNamed = haystack.includes("shutdown") || haystack.includes("rave mode") || haystack.includes("own the night");
+
+  return explicitlyNamed || (isThursday && isDulce && isIlhhSeries);
 };
 
 export const getEventProfileNames = (events: EventWithDJs[]) => {

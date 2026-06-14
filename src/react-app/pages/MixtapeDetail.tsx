@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 import { Download, Headphones, Pause, Play, Share2, TrendingUp } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
+import EngagementBar from "@/react-app/components/EngagementBar";
 import type { Mixtape } from "@/shared/types";
 
 export default function MixtapeDetail() {
@@ -115,6 +116,9 @@ export default function MixtapeDetail() {
                 <Share2 className="w-6 h-6 text-neon-red mb-2" />
                 <p className="text-white font-heading">Share ready</p>
               </div>
+            </div>
+            <div className="mt-6">
+              <EngagementBar targetType="mixtape" targetId={mix.id} modes={["like", "save"]} />
             </div>
           </div>
         </div>

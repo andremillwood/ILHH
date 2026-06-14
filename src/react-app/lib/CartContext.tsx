@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { getMerchProduct, type MerchProduct } from "@/react-app/lib/merchProducts";
+import type { MerchProduct } from "@/react-app/lib/merchProducts";
 
 export interface CartItem {
   productId: string;
@@ -40,7 +40,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (storedCart) {
       try {
         const parsedItems = JSON.parse(storedCart) as CartItem[];
-        setItems(parsedItems.filter((item) => getMerchProduct(item.productId)));
+        setItems(parsedItems.filter((item) => item.productId && item.variantId && item.name));
       } catch {
         window.localStorage.removeItem(CART_STORAGE_KEY);
       }

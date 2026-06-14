@@ -1,8 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { normalizeCheckoutItems } from './_lib/merch.js';
+import { normalizeCheckoutItemsWithCatalog, type CheckoutItem } from './_lib/merch.js';
 import { createServerClient } from './_lib/supabase.js';
 import { createPendingOrder } from './_lib/orders.js';
+import { trackAnalyticsEvent } from './_lib/analytics.js';
 
 const CheckoutSchema = z.object({
     items: z.array(z.object({
@@ -53,8 +54,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
-        const items = normalizeCheckoutItems(parseResult.data.items as any);
         const baseUrl = getBaseUrl(req);
+        const supabase = createServerClient();
+        const checkoutItems: CheckoutItem[] = parseResult.data.items.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId,
+            name: item.name,
+            price: item.price,
+            color: item.color,
+            size: item.size,
+            quantity: item.quantity,
+        }));
+        const items = await normalizeCheckoutItemsWithCatalog(checkoutItems, supabase);
         const params = new URLSearchParams({
             mode: 'payment',
             success_url: `${baseUrl}/merch?checkout=success`,
@@ -89,16 +100,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(response.status).json({ error: data.error?.message || 'Stripe checkout failed' });
         }
 
-        const supabase = createServerClient();
         await createPendingOrder(supabase, {
             stripeSessionId: data.id,
             affiliateCode: parseResult.data.affiliateCode,
             currency: process.env.STRIPE_CURRENCY || 'usd',
             items,
         });
+        await trackAnalyticsEvent(supabase, req, {
+            eventName: 'checkout_started',
+            properties: {
+                stripeSessionId: data.id,
+                affiliateCode: parseResult.data.affiliateCode || null,
+                items: items.map((item) => ({ productId: item.productId, variantId: item.variantId, quantity: item.quantity })),
+                totalCents: items.reduce((total, item) => total + Math.round(item.price * 100) * item.quantity, 0),
+            },
+        });
 
         return res.status(200).json({ id: data.id, url: data.url });
-    } catch (error: any) {
-        return res.status(500).json({ error: error.message });
+    } catch (error) {
+        return res.status(500).json({ error: error instanceof Error ? error.message : 'Checkout failed' });
     }
 }

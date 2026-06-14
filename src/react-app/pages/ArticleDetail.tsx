@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { Calendar, User, ArrowLeft } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
+import EngagementBar from "@/react-app/components/EngagementBar";
 import type { Article } from "@/shared/types";
 
 export default function ArticleDetail() {
@@ -122,6 +123,9 @@ export default function ArticleDetail() {
                     </span>
                   </div>
                 )}
+              </div>
+              <div className="mt-6">
+                <EngagementBar targetType="article" targetId={article.id} modes={["like", "save"]} />
               </div>
             </div>
 

@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { adminEmails, emailSenders, sendBrandedEmail, siteUrl } from './_lib/email.js';
 import { enforceRateLimit } from './_lib/rate-limit.js';
+import { trackAnalyticsEvent } from './_lib/analytics.js';
 
 const RsvpSchema = z.object({
     event_id: z.number(),
@@ -126,6 +127,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 ],
             }),
         ]);
+        await trackAnalyticsEvent(supabase, req, {
+            eventName: 'rsvp_submitted',
+            email: data.email,
+            properties: { rsvpId: rsvp.id, eventId: data.event_id, packageType: data.package_type, groupSize: data.group_size || 1 },
+        });
 
         return res.status(201).json({ success: true, id: rsvp.id });
     } catch (error: any) {

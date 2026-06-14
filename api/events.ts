@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { adminEmails, emailSenders, sendBrandedEmail, siteUrl } from './_lib/email.js';
 import { enforceRateLimit } from './_lib/rate-limit.js';
+import { trackAnalyticsEvent } from './_lib/analytics.js';
 
 const EventSubmissionSchema = z.object({
     event_title: z.string().min(2),
@@ -96,6 +97,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     replyTo: submission.promoter_email,
                 }),
             ]);
+            await trackAnalyticsEvent(supabase, req, {
+                eventName: 'event_submitted',
+                email: submission.promoter_email,
+                properties: { submissionId: data.id, eventTitle: submission.event_title, eventDate: submission.event_date },
+            });
 
             return res.status(201).json({ success: true, id: data.id });
         }

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { Calendar, MapPin, Mic2, Music, Camera, FileText, Gift, Radio, Ticket, Users, ShoppingBag } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart3, Bookmark, Calendar, MapPin, Mic2, Music, Camera, FileText, Gift, LayoutDashboard, PenLine, Radio, Ticket, Users, ShoppingBag } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import CountdownTimer from "@/react-app/components/CountdownTimer";
 import ShareButtons from "@/react-app/components/ShareButtons";
+import SocialCtas from "@/react-app/components/SocialCtas";
+import { useAuth } from "@/lib/AuthContext";
 import type { EventWithDJs, Mixtape, Article } from "@/shared/types";
+import { merchProducts } from "@/react-app/lib/merchProducts";
 
 interface Gallery {
   id: number;
@@ -12,12 +15,24 @@ interface Gallery {
   featured_image_url: string | null;
 }
 
+const memberStudioActions = [
+  { to: "/home", label: "Home", text: "Feed, saved items, creator stats, submissions, and claims.", icon: LayoutDashboard },
+  { to: "/membership", label: "My Profile", text: "Edit member info and submit a creator profile.", icon: Users },
+  { to: "/directory", label: "Directory", text: "Follow, save, and claim DJ/artist/promoter profiles.", icon: Mic2 },
+  { to: "/submit-article", label: "Submit Story", text: "Send reviews, recaps, interviews, or scene reports.", icon: PenLine },
+  { to: "/playlists", label: "Playlists", text: "Suggest tracks and vote on community rankings.", icon: Music },
+  { to: "/music", label: "Music Library", text: "Like and save mixes for your personal library.", icon: Bookmark },
+  { to: "/admin", label: "Admin", text: "Review submissions, claims, events, and playlists.", icon: BarChart3 },
+];
+
 export default function Home() {
+  const { user } = useAuth();
   const [events, setEvents] = useState<EventWithDJs[]>([]);
   const [mixtapes, setMixtapes] = useState<Mixtape[]>([]);
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeHero, setActiveHero] = useState(0);
 
   useEffect(() => {
     Promise.all([
@@ -48,67 +63,206 @@ export default function Home() {
     return eventDate >= now;
   });
 
-  const isFlagshipEvent = (title: string) => title.toLowerCase().includes("i luv hip hop");
-  const nextEvent = upcomingEvents.find(e => isFlagshipEvent(e.title)) || upcomingEvents[0];
+  const isIluvHipHopWeekly = (title: string) => title.toLowerCase().includes("i luv hip hop");
+  const nextEvent = upcomingEvents.find(e => isIluvHipHopWeekly(e.title)) || upcomingEvents[0];
+  const otherEvent = upcomingEvents.find((event) => event.id !== nextEvent?.id);
+  const featuredProduct = merchProducts[0];
+  const featuredMixtape = mixtapes[0];
+  const featuredArticle = articles[0];
+  const heroSlides = [
+    {
+      key: "merch",
+      eyebrow: "Official Merch",
+      title: "WEAR THE MOVEMENT",
+      body: featuredProduct
+        ? `${featuredProduct.name} is the current weekly drop, available in ${featuredProduct.colors.join(", ")}.`
+        : "Shop official This Is Hip Hop Caribbean apparel and member-linked drops.",
+      to: featuredProduct ? `/merch/product/${featuredProduct.id}` : "/merch",
+      cta: "Shop Merch",
+      image: featuredProduct?.images[0]?.url || "https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png",
+      meta: featuredProduct ? `$${featuredProduct.price.toFixed(2)} / Made to order` : "Official store",
+      icon: ShoppingBag,
+    },
+    {
+      key: "ilhh-weekly",
+      eyebrow: "I Luv Hip Hop Weekly",
+      title: nextEvent?.title || "I LUV HIP HOP THURSDAYS",
+      body: nextEvent?.description || "Reserve your spot for I Luv Hip Hop Weekly at Dulce Lounge, 22 Barbican Road.",
+      to: nextEvent ? `/rsvp/${nextEvent.id}` : "/events",
+      cta: nextEvent ? "RSVP Now" : "Find Events",
+      image: nextEvent?.flyer_url || "https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/hero-event-bg.png",
+      meta: nextEvent ? `${nextEvent.event_date} / ${nextEvent.venue_name || "Venue TBA"}` : "Every Thursday / Dulce Lounge",
+      icon: Ticket,
+    },
+    {
+      key: "events",
+      eyebrow: "More Events",
+      title: otherEvent?.title || "DISCOVER THE CALENDAR",
+      body: otherEvent?.theme || "Track promoted hip hop events, trusted rooms, DJ nights, and cultural moments across the platform.",
+      to: otherEvent ? `/events/${otherEvent.id}` : "/events",
+      cta: "View Events",
+      image: otherEvent?.flyer_url || "https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/hero-event-bg.png",
+      meta: otherEvent ? `${otherEvent.event_date} / ${otherEvent.venue_name || "Venue TBA"}` : `${upcomingEvents.length} upcoming listings`,
+      icon: Calendar,
+    },
+    {
+      key: "mixtapes",
+      eyebrow: "Music",
+      title: featuredMixtape?.title || "NEW MIXES IN ROTATION",
+      body: featuredMixtape?.description || "Stream DJ sets, event recordings, and new mixes connected to the Caribbean hip hop community.",
+      to: featuredMixtape ? `/music/${featuredMixtape.slug || featuredMixtape.id}` : "/music",
+      cta: "Play Music",
+      image: featuredMixtape?.cover_art_url || "https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png",
+      meta: featuredMixtape ? `DJ ${featuredMixtape.dj_name}` : "Featured DJ sets",
+      icon: Music,
+    },
+    {
+      key: "articles",
+      eyebrow: "Culture & Features",
+      title: featuredArticle?.title || "READ THE LATEST",
+      body: featuredArticle?.excerpt || "Catch new stories, event recaps, culture coverage, and updates from This Is Hip Hop Caribbean.",
+      to: featuredArticle ? `/stories/${featuredArticle.slug}` : "/stories",
+      cta: "Read Stories",
+      image: featuredArticle?.featured_image_url || "https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/hero-event-bg.png",
+      meta: featuredArticle?.author ? `By ${featuredArticle.author}` : "Platform updates",
+      icon: FileText,
+    },
+  ];
+  const activeSlide = heroSlides[activeHero] || heroSlides[0];
+  const HeroIcon = activeSlide.icon;
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveHero((current) => (current + 1) % heroSlides.length);
+    }, 6500);
+
+    return () => window.clearInterval(interval);
+  }, [heroSlides.length]);
 
   return (
     <div className="min-h-screen bg-black graffiti-texture">
       <Navigation />
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+      <section className="relative min-h-[92vh] overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/hero-event-bg.png"
+            src={activeSlide.image}
             alt=""
-            className="w-full h-full object-cover opacity-40"
+            className="w-full h-full object-cover opacity-45 transition-opacity duration-700"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black z-0" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/85 to-black/40 z-0" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent z-0" />
 
-        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
-          <div className="mb-8 animate-float">
-            <img
-              src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png"
-              alt="I Luv Hip Hop"
-              className="w-64 h-64 mx-auto neon-glow"
-            />
+        <div className="relative z-10 mx-auto grid min-h-[calc(92vh-5rem)] max-w-7xl items-center gap-10 px-4 py-10 lg:grid-cols-[1.05fr_0.95fr] sm:px-6 lg:px-8">
+          <div>
+            <div className="mb-6 inline-flex items-center gap-3 border border-neon-red/50 bg-black/70 px-4 py-3">
+              <HeroIcon className="h-5 w-5 text-neon-red" />
+              <span className="font-heading uppercase text-neon-red">{activeSlide.eyebrow}</span>
+            </div>
+
+            <h1 className="font-display text-5xl md:text-8xl mb-6 neon-text-simple animate-glow-pulse leading-none">
+              {activeSlide.title}
+            </h1>
+
+            <p className="max-w-2xl text-xl md:text-2xl text-white mb-4 font-heading">
+              The Caribbean hub for merch, I Luv Hip Hop Weekly RSVP, promoted events, mixtapes, articles, DJs, and community.
+            </p>
+
+            <p className="max-w-2xl text-lg text-gray-300 mb-8 font-heading">
+              {activeSlide.body}
+            </p>
+
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row">
+              <Link
+                to={activeSlide.to}
+                className="px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase text-center neon-glow"
+              >
+                {activeSlide.cta}
+              </Link>
+              <Link
+                to={user ? "/dashboard" : "/membership"}
+                className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase text-center"
+              >
+                {user ? "Open Home" : "Join Membership"}
+              </Link>
+            </div>
+
+            <div className="grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-5">
+              {heroSlides.map((slide, index) => (
+                <button
+                  key={slide.key}
+                  type="button"
+                  onClick={() => setActiveHero(index)}
+                  className={`min-h-16 border p-3 text-left transition ${index === activeHero ? "border-neon-red bg-neon-red text-black" : "border-white/15 bg-black/60 text-white hover:border-neon-red"}`}
+                  aria-label={`Show ${slide.eyebrow}`}
+                >
+                  <slide.icon className={`mb-2 h-4 w-4 ${index === activeHero ? "text-black" : "text-neon-red"}`} />
+                  <span className="block font-heading text-xs uppercase leading-tight">{slide.eyebrow}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          <p className="text-neon-red font-heading uppercase tracking-[0.35em] mb-4">
-            I Luv Hip Hop presents
-          </p>
-
-          <h1 className="font-display text-6xl md:text-9xl mb-6 neon-text-simple animate-glow-pulse">
-            THIS IS HIP HOP CARIBBEAN
-          </h1>
-
-          <p className="text-2xl md:text-3xl text-white mb-4 font-heading tracking-wide">
-            The Caribbean hub for events, DJs, promoters, culture, and community.
-          </p>
-
-          <p className="text-lg md:text-xl text-gray-400 mb-12 font-heading max-w-2xl mx-auto">
-            I Luv Hip Hop remains our flagship weekly event while the platform expands to promote every room where hip hop is properly represented.
-            <br />
-            Flagship Thursdays • Dulce Lounge • Kingston, Jamaica
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/membership"
-              className="px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider neon-glow"
-            >
-              Join Membership
-            </Link>
-            <Link
-              to="/events"
-              className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase tracking-wider"
-            >
-              Find Events & RSVP
-            </Link>
+          <div className="relative">
+            <div className="neon-border bg-black/75 p-4 md:p-6">
+              <div className="aspect-[4/5] overflow-hidden bg-black">
+                <img src={activeSlide.image} alt={activeSlide.title} className="h-full w-full object-cover" />
+              </div>
+              <div className="mt-5 flex items-center justify-between gap-4">
+                <div>
+                  <p className="font-heading text-sm uppercase text-neon-red">{activeSlide.meta}</p>
+                  <p className="mt-1 text-gray-300 font-heading">Featured on This Is Hip Hop Caribbean</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveHero((current) => (current - 1 + heroSlides.length) % heroSlides.length)}
+                    className="flex h-11 w-11 items-center justify-center border border-white/20 text-white hover:border-neon-red hover:text-neon-red transition"
+                    aria-label="Previous hero slide"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveHero((current) => (current + 1) % heroSlides.length)}
+                    className="flex h-11 w-11 items-center justify-center border border-white/20 text-white hover:border-neon-red hover:text-neon-red transition"
+                    aria-label="Next hero slide"
+                  >
+                    <ArrowRight className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {user && (
+        <section className="py-12 px-4 bg-black">
+          <div className="max-w-7xl mx-auto neon-border bg-black/90 p-6 md:p-8">
+            <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-6 items-center">
+              <div>
+                <p className="text-neon-red font-heading uppercase tracking-[0.35em] mb-3">You are signed in</p>
+                <h2 className="font-display text-5xl md:text-7xl text-white mb-4">MEMBER STUDIO</h2>
+                <p className="text-gray-300 font-heading text-lg">
+                  Your logged-in experience lives here: saved culture, creator stats, profile claims, article submissions, playlist suggestions, and member profile tools.
+                </p>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {memberStudioActions.map((action) => (
+                  <Link key={action.to} to={action.to} className="border border-white/10 bg-white/[0.03] p-4 hover:border-neon-red hover:bg-neon-red/10 transition">
+                    <action.icon className="w-7 h-7 text-neon-red mb-3" />
+                    <h3 className="font-heading text-white uppercase tracking-wider">{action.label}</h3>
+                    <p className="text-gray-400 text-sm mt-1">{action.text}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Brand Expansion */}
       <section className="py-20 px-4 bg-gradient-to-b from-black to-neon-red/5">
@@ -116,9 +270,9 @@ export default function Home() {
           <div className="grid lg:grid-cols-3 gap-6">
             <div className="neon-border bg-black/80 p-8">
               <Ticket className="w-10 h-10 text-neon-red mb-4" />
-              <h2 className="font-display text-4xl text-white mb-4">Flagship Weekly</h2>
+              <h2 className="font-display text-4xl text-white mb-4">I Luv Hip Hop Weekly</h2>
               <p className="text-gray-300 font-heading">
-                I Luv Hip Hop continues as the weekly home base for dedicated hip hop nights, table reservations, and member access.
+                I Luv Hip Hop Weekly continues as the home base for dedicated hip hop nights, table reservations, and member access at Dulce Lounge, 22 Barbican Road.
               </p>
             </div>
             <div className="neon-border bg-black/80 p-8">
@@ -137,8 +291,8 @@ export default function Home() {
               <p className="text-gray-300 font-heading">
                 Members get the newsletter, first notice on designated RSVP events, happy hour perks, and community updates.
               </p>
-              <Link to="/profiles" className="inline-block mt-5 text-neon-red hover:text-white transition font-heading uppercase tracking-wider">
-                View Profiles
+              <Link to="/directory" className="inline-block mt-5 text-neon-red hover:text-white transition font-heading uppercase tracking-wider">
+                View Directory
               </Link>
             </div>
           </div>
@@ -212,7 +366,11 @@ export default function Home() {
                       </div>
                       <div className="flex items-center text-white">
                         <MapPin className="w-5 h-5 mr-3 text-neon-red" />
-                        <span className="font-heading">{nextEvent.venue_name}</span>
+                        <span className="font-heading">{nextEvent.venue_name || "Dulce Lounge"}</span>
+                      </div>
+                      <div className="flex items-center text-white">
+                        <MapPin className="w-5 h-5 mr-3 text-neon-red opacity-0" />
+                        <span className="font-heading text-gray-300">{nextEvent.venue_address || "22 Barbican Road"}</span>
                       </div>
                     </div>
 
@@ -283,16 +441,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Mixtape Preview */}
+      {/* Music Preview */}
       {mixtapes.length > 0 && (
         <section className="py-20 px-4 relative">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-12">
               <h2 className="font-display text-5xl md:text-7xl neon-text-simple">
-                MIXTAPE VAULT
+                MUSIC
               </h2>
               <Link
-                to="/mixtapes"
+                to="/music"
                 className="px-6 py-3 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading uppercase tracking-wider"
               >
                 View All
@@ -303,7 +461,7 @@ export default function Home() {
               {mixtapes.map((mixtape) => (
                 <Link
                   key={mixtape.id}
-                  to={`/mixtapes/${mixtape.slug || mixtape.id}`}
+                  to={`/music/${mixtape.slug || mixtape.id}`}
                   className="group glass-panel overflow-hidden card-hover"
                 >
                   <div className="aspect-square relative overflow-hidden bg-gradient-to-br from-neon-red/20 to-black">
@@ -373,16 +531,16 @@ export default function Home() {
         </section>
       )}
 
-      {/* Articles Preview */}
+      {/* Stories Preview */}
       {articles.length > 0 && (
         <section className="py-20 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-12">
               <h2 className="font-display text-5xl md:text-7xl neon-text-simple">
-                CULTURE & FEATURES
+                STORIES
               </h2>
               <Link
-                to="/articles"
+                to="/stories"
                 className="px-6 py-3 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading uppercase tracking-wider"
               >
                 Read More
@@ -393,7 +551,7 @@ export default function Home() {
               {articles.map((article) => (
                 <Link
                   key={article.id}
-                  to={`/articles/${article.slug}`}
+                  to={`/stories/${article.slug}`}
                   className="group neon-border bg-black/80 backdrop-blur-md overflow-hidden hover:neon-glow transition"
                 >
                   {article.featured_image_url && (
@@ -408,7 +566,7 @@ export default function Home() {
                   <div className="p-6">
                     <div className="flex items-center text-neon-red mb-2">
                       <FileText className="w-4 h-4 mr-2" />
-                      <span className="text-xs font-heading uppercase">Article</span>
+                      <span className="text-xs font-heading uppercase">Story</span>
                     </div>
                     <h3 className="font-heading text-xl text-white group-hover:text-neon-red transition line-clamp-2">
                       {article.title}
@@ -464,8 +622,8 @@ export default function Home() {
                 <Link to="/membership" className="block text-gray-400 hover:text-neon-red transition font-heading">
                   Membership
                 </Link>
-                <Link to="/mixtapes" className="block text-gray-400 hover:text-neon-red transition font-heading">
-                  Mixtapes
+                <Link to="/music" className="block text-gray-400 hover:text-neon-red transition font-heading">
+                  Music
                 </Link>
                 <Link to="/community" className="block text-gray-400 hover:text-neon-red transition font-heading">
                   Community
@@ -482,6 +640,10 @@ export default function Home() {
                 22 Barbican Road<br />
                 Kingston, Jamaica
               </p>
+              <div className="mt-6">
+                <h3 className="font-heading text-white mb-4 uppercase tracking-wider">Connect</h3>
+                <SocialCtas compact />
+              </div>
             </div>
           </div>
           <div className="text-center pt-8 border-t border-neon-red/30">

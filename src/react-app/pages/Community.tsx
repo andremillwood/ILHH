@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Music, Heart, Quote, User } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
+import SocialCtas from "@/react-app/components/SocialCtas";
 import type { Member } from "@/shared/types";
 
 export default function Community() {
@@ -34,6 +35,9 @@ export default function Community() {
             <p className="text-xl text-gray-400 font-heading mb-8">
               Connect with fellow hip hop lovers and share your musical identity
             </p>
+            <div className="max-w-4xl mx-auto">
+              <SocialCtas />
+            </div>
           </div>
 
           {/* Trending Section */}

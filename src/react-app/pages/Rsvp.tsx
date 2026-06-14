@@ -130,7 +130,7 @@ export default function Rsvp() {
             RESERVE YOUR TABLE
           </h1>
           <p className="text-center text-xl text-gray-400 mb-10 font-heading max-w-3xl mx-auto">
-            RSVP for designated I Luv Hip Hop events and request the table package that fits your group.
+            RSVP for complimentary shots and selected 2-for-1 Wray & Nephew or Kingston 62 deals. Book a table and receive a complimentary hookah on orders of J$15,000 or more.
           </p>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -185,7 +185,16 @@ export default function Rsvp() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="font-heading text-lg text-white mb-3">TABLE PACKAGES</h3>
+                <h3 className="font-heading text-lg text-white mb-3">RSVP PERKS</h3>
+                <div className="border-l-2 border-neon-red pl-4 bg-neon-red/10 py-3 pr-3">
+                  <p className="font-heading text-white">Complimentary Shots + 2-for-1 Drinks</p>
+                  <p className="text-sm text-gray-300">RSVP guests receive complimentary shots and access to selected 2-for-1 Wray & Nephew or Kingston 62 deals. Arrive early and present your RSVP details.</p>
+                </div>
+                <h3 className="font-heading text-lg text-white mb-3 pt-4">TABLE PACKAGES</h3>
+                <div className="border-l-2 border-neon-red pl-4 bg-neon-red/10 py-3 pr-3">
+                  <p className="font-heading text-white">Complimentary Hookah</p>
+                  <p className="text-sm text-gray-300">Table orders of J$15,000 or more receive a complimentary hookah.</p>
+                </div>
                 <div className="border-l-2 border-neon-red/50 pl-4">
                   <p className="font-heading text-white">SPECIAL TABLE</p>
                   <p className="text-sm text-gray-400">Premium seating experience</p>

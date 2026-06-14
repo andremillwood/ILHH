@@ -21,10 +21,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { createClient } = await import('@supabase/supabase-js');
         const supabase = createClient(supabaseUrl!, supabaseAnonKey!);
 
-        const { data: galleries, error } = await supabase
+        let query = supabase
             .from('galleries')
-            .select('*')
+            .select('*, events(id, title, event_date, venue_name), event_gallery_images(*)')
+            .or('status.is.null,status.eq.published')
             .order('created_at', { ascending: false });
+        if (req.query.event_id) {
+            query = query.eq('event_id', Number(req.query.event_id));
+        }
+        const { data: galleries, error } = await query;
 
         if (error) {
             console.error('Error fetching galleries:', error);

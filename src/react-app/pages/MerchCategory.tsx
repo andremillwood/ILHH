@@ -4,11 +4,13 @@ import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
 import ProductCard from "@/react-app/components/merch/ProductCard";
 import CartPanel from "@/react-app/components/merch/CartPanel";
-import { getMerchCategory, merchCategories, merchProducts } from "@/react-app/lib/merchProducts";
+import { getMerchCategory, merchCategories } from "@/react-app/lib/merchProducts";
+import { useMerchCatalog } from "@/react-app/lib/useMerchCatalog";
 
 export default function MerchCategory() {
   const { categoryId } = useParams();
   const category = getMerchCategory(categoryId || "");
+  const { products: merchProducts } = useMerchCatalog();
   const products = merchProducts.filter((product) => product.category === categoryId);
 
   if (!category) {

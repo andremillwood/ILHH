@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { createServerClient } from './_lib/supabase.js';
 import { adminEmails, emailSenders, sendBrandedEmail } from './_lib/email.js';
 import { logOrderEvent, markOrderCancelled, markOrderPaid, submitOrderToPrintful } from './_lib/orders.js';
+import { trackAnalyticsEvent } from './_lib/analytics.js';
 
 export const config = {
     api: {
@@ -81,11 +82,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (event.type === 'checkout.session.completed') {
             const session = await fetchStripeSession(event.data.object.id);
             const order = await markOrderPaid(supabase, session);
+            await trackAnalyticsEvent(supabase, req, {
+                eventName: 'checkout_completed',
+                email: order.customer_email,
+                properties: { orderId: order.id, publicId: order.public_id, totalCents: order.total_cents, stripeSessionId: session.id },
+            });
             await submitOrderToPrintful(supabase, order);
         }
 
         if (event.type === 'checkout.session.expired') {
             await markOrderCancelled(supabase, event.data.object.id, 'Stripe checkout session expired.');
+            await trackAnalyticsEvent(supabase, req, {
+                eventName: 'checkout_expired',
+                properties: { stripeSessionId: event.data.object.id },
+            });
         }
 
         if (event.type === 'payment_intent.payment_failed') {

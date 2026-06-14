@@ -10,16 +10,22 @@ type Policy = {
   updated_at?: string;
 };
 
-export default function PolicyPage() {
+type PolicyPageProps = {
+  fixedSlug?: string;
+};
+
+export default function PolicyPage({ fixedSlug }: PolicyPageProps) {
   const { policySlug } = useParams();
+  const activeSlug = fixedSlug || policySlug || "terms";
   const [policy, setPolicy] = useState<Policy | null>(null);
 
   useEffect(() => {
-    fetch(`/api/public?resource=policies&slug=${encodeURIComponent(policySlug || "terms")}`)
+    setPolicy(null);
+    fetch(`/api/public?resource=policies&slug=${encodeURIComponent(activeSlug)}`)
       .then((response) => response.json())
       .then(setPolicy)
       .catch(() => setPolicy(null));
-  }, [policySlug]);
+  }, [activeSlug]);
 
   return (
     <div className="min-h-screen bg-black graffiti-texture">
@@ -35,8 +41,8 @@ export default function PolicyPage() {
               {policy?.body || "This policy is being updated."}
             </p>
             <div className="flex flex-wrap gap-3 mt-10">
-              <Link to="/policy/terms" className="px-5 py-3 border border-neon-red/50 text-neon-red font-heading uppercase">Terms</Link>
-              <Link to="/policy/privacy" className="px-5 py-3 border border-neon-red/50 text-neon-red font-heading uppercase">Privacy</Link>
+              <Link to="/terms" className="px-5 py-3 border border-neon-red/50 text-neon-red font-heading uppercase">Terms</Link>
+              <Link to="/privacy" className="px-5 py-3 border border-neon-red/50 text-neon-red font-heading uppercase">Privacy</Link>
               <Link to="/policy/refunds" className="px-5 py-3 border border-neon-red/50 text-neon-red font-heading uppercase">Refunds</Link>
             </div>
           </section>

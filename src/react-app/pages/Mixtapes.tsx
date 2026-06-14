@@ -84,6 +84,9 @@ export default function Mixtapes() {
               <Link to="/mixtapes/upload" className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase tracking-wider text-center">
                 Upload Mix
               </Link>
+              <Link to="/playlists" className="px-8 py-4 border border-white/20 text-white hover:text-neon-red hover:border-neon-red transition font-heading text-xl uppercase tracking-wider text-center">
+                Playlist Hub
+              </Link>
             </div>
           </div>
 
