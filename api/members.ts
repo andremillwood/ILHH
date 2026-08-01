@@ -335,7 +335,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             await Promise.all([
                 sendBrandedEmail({
                     to: data.email,
-                    subject: 'Welcome to I Love Hip Hop JA',
+                    subject: 'Welcome to This Is Hip Hop Caribbean',
                     preview: 'Your member profile is live.',
                     from: emailSenders.membership,
                     eyebrow: 'Membership',

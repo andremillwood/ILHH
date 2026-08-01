@@ -1,5 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
+import { createR2Upload } from './_lib/r2.js';
+
+const ADMIN_EMAILS = ['andremillwood@gmail.com', 'admin@ilovehiphopja.com'];
 
 const MixtapeCreateSchema = z.object({
     title: z.string().min(2),
@@ -14,6 +17,14 @@ const MixtapeCreateSchema = z.object({
     genre: z.string().optional(),
     tags: z.string().optional(),
     is_downloadable: z.boolean().optional(),
+});
+
+const UploadSchema = z.object({
+    filename: z.string().min(1).max(240),
+    contentType: z.string().min(1).max(120),
+    size: z.number().int().positive(),
+    purpose: z.enum(['mix', 'artwork', 'gallery']),
+    galleryId: z.number().int().positive().optional(),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -34,6 +45,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             global: { headers: { Authorization: authHeader } },
             auth: { persistSession: false },
         } : undefined);
+
+        if (req.method === 'POST' && req.query.action === 'sign-upload') {
+            if (!authHeader) return res.status(401).json({ error: 'Authorization required' });
+            const parsed = UploadSchema.safeParse(req.body);
+            if (!parsed.success) return res.status(400).json({ error: 'Invalid upload request', details: parsed.error.issues });
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (error || !user) return res.status(401).json({ error: 'Unauthorized' });
+            if (parsed.data.purpose === 'gallery' && (!user.email || !ADMIN_EMAILS.includes(user.email))) {
+                return res.status(403).json({ error: 'Admin access required for gallery uploads' });
+            }
+            try {
+                return res.status(200).json(await createR2Upload({
+                    filename: parsed.data.filename,
+                    contentType: parsed.data.contentType,
+                    size: parsed.data.size,
+                    purpose: parsed.data.purpose,
+                    galleryId: parsed.data.galleryId,
+                    userId: user.id,
+                }));
+            } catch (uploadError) {
+                return res.status(400).json({ error: uploadError instanceof Error ? uploadError.message : 'Could not prepare upload' });
+            }
+        }
 
         if (req.method === 'GET') {
             const { id, slug } = req.query;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth, useAuthHeader } from "@/lib/AuthContext";
 import { useNavigate } from "react-router";
-import { Settings, Calendar, Users, FileText, Music, Image, Gift, Plus, Trash2, Edit, Save, X, Loader2, ShoppingBag, ClipboardList, Mail, BarChart3, LifeBuoy, RefreshCw, BadgeCheck, UserPlus, Headphones } from "lucide-react";
+import { Settings, Calendar, Users, FileText, Music, Image, Gift, Plus, Trash2, Edit, Save, X, Loader2, ShoppingBag, ClipboardList, Mail, BarChart3, LifeBuoy, RefreshCw, BadgeCheck, UserPlus, Headphones, Search, Filter, SlidersHorizontal, ArrowUpDown, Radio } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 
 interface Event {
@@ -208,6 +208,149 @@ interface AdminProfileClaim {
   creator_profiles?: { display_name?: string; slug?: string };
 }
 
+interface FilterBarProps {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  searchPlaceholder?: string;
+  statusFilter?: string;
+  onStatusChange?: (value: string) => void;
+  statusOptions?: { value: string; label: string }[];
+  categoryFilter?: string;
+  onCategoryChange?: (value: string) => void;
+  categoryOptions?: { value: string; label: string }[];
+  sortBy?: string;
+  onSortChange?: (value: string) => void;
+  sortOptions?: { value: string; label: string }[];
+  totalCount: number;
+  filteredCount: number;
+  itemLabel?: string;
+}
+
+export function AdminFilterBar({
+  searchTerm,
+  onSearchChange,
+  searchPlaceholder = "Search...",
+  statusFilter,
+  onStatusChange,
+  statusOptions = [],
+  categoryFilter,
+  onCategoryChange,
+  categoryOptions = [],
+  sortBy,
+  onSortChange,
+  sortOptions = [],
+  totalCount,
+  filteredCount,
+  itemLabel = "items",
+}: FilterBarProps) {
+  const hasActiveFilters = Boolean(
+    searchTerm ||
+    (statusFilter && statusFilter !== "all") ||
+    (categoryFilter && categoryFilter !== "all")
+  );
+
+  return (
+    <div className="mb-6 p-4 border border-white/10 bg-black/60 backdrop-blur-md rounded-lg space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        {/* Search Input */}
+        <div className="relative flex-1 min-w-[260px]">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder={searchPlaceholder}
+            className="w-full pl-10 pr-9 py-2.5 bg-black/70 border border-white/20 rounded text-white placeholder-gray-500 font-heading text-sm focus:outline-none focus:border-neon-red transition"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => onSearchChange("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs font-bold"
+            >
+              ×
+            </button>
+          )}
+        </div>
+
+        {/* Filter Dropdowns */}
+        <div className="flex flex-wrap items-center gap-3">
+          {statusOptions.length > 0 && onStatusChange && (
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-neon-red hidden sm:inline-block" />
+              <select
+                value={statusFilter || "all"}
+                onChange={(e) => onStatusChange(e.target.value)}
+                className="py-2 px-3 bg-black/80 border border-white/20 rounded text-white font-heading text-xs uppercase focus:outline-none focus:border-neon-red transition"
+              >
+                {statusOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {categoryOptions.length > 0 && onCategoryChange && (
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-neon-red hidden sm:inline-block" />
+              <select
+                value={categoryFilter || "all"}
+                onChange={(e) => onCategoryChange(e.target.value)}
+                className="py-2 px-3 bg-black/80 border border-white/20 rounded text-white font-heading text-xs uppercase focus:outline-none focus:border-neon-red transition"
+              >
+                {categoryOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {sortOptions.length > 0 && onSortChange && (
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="w-4 h-4 text-gray-400 hidden sm:inline-block" />
+              <select
+                value={sortBy || "newest"}
+                onChange={(e) => onSortChange(e.target.value)}
+                className="py-2 px-3 bg-black/80 border border-white/20 rounded text-white font-heading text-xs uppercase focus:outline-none focus:border-neon-red transition"
+              >
+                {sortOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Item Counter & Active Filter Badge */}
+      <div className="flex items-center justify-between pt-2 border-t border-white/10 text-xs font-heading">
+        <span className="text-gray-400 uppercase tracking-wider">
+          Showing <span className="text-white font-bold">{filteredCount}</span> of{" "}
+          <span className="text-white font-bold">{totalCount}</span> {itemLabel}
+        </span>
+
+        {hasActiveFilters && (
+          <button
+            onClick={() => {
+              onSearchChange("");
+              if (onStatusChange) onStatusChange("all");
+              if (onCategoryChange) onCategoryChange("all");
+            }}
+            className="text-neon-red hover:underline uppercase tracking-wider text-[11px]"
+          >
+            Clear Filters
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Admin() {
   const { user, loading: isPending } = useAuth();
   const authHeader = useAuthHeader();
@@ -225,6 +368,19 @@ export default function Admin() {
   const [eventSubmissions, setEventSubmissions] = useState<AdminEventSubmission[]>([]);
   const [supportRequests, setSupportRequests] = useState<SupportRequest[]>([]);
   const [creatorProfiles, setCreatorProfiles] = useState<AdminCreatorProfile[]>([]);
+
+  // Filter & Search states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
+
+  useEffect(() => {
+    setSearchTerm("");
+    setStatusFilter("all");
+    setCategoryFilter("all");
+    setSortBy("newest");
+  }, [activeTab]);
   const [contentSubmissions, setContentSubmissions] = useState<AdminContentSubmission[]>([]);
   const [profileClaims, setProfileClaims] = useState<AdminProfileClaim[]>([]);
   const [playlists, setPlaylists] = useState<MusicPlaylist[]>([]);
@@ -247,6 +403,16 @@ export default function Admin() {
   const [showGalleryForm, setShowGalleryForm] = useState(false);
   const [editingGallery, setEditingGallery] = useState<AdminGallery | null>(null);
   const [imageGallery, setImageGallery] = useState<AdminGallery | null>(null);
+
+  const filteredEvents = events.filter((e) => {
+    const matchesSearch = !searchTerm || [e.title, e.description, e.venue_name, e.theme].some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = statusFilter === "all";
+    const matchesCategory = categoryFilter === "all";
+    return matchesSearch && matchesStatus && matchesCategory;
+  }).sort((a, b) => {
+    if (sortBy === "oldest") return a.event_date.localeCompare(b.event_date);
+    return b.event_date.localeCompare(a.event_date);
+  });
 
   useEffect(() => {
     if (!isPending && !user) {
@@ -567,6 +733,7 @@ export default function Admin() {
     { id: "articles", label: "Articles", icon: FileText },
     { id: "mixtapes", label: "Mixtapes", icon: Music },
     { id: "playlists", label: "Playlists", icon: Headphones },
+    { id: "dj_vote", label: "DJ Vote", icon: Radio },
     { id: "gallery", label: "Gallery", icon: Image },
     { id: "coupons", label: "Coupons", icon: Gift },
   ];
@@ -893,11 +1060,26 @@ export default function Admin() {
                   </button>
                 </div>
 
+                <AdminFilterBar
+                  searchTerm={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  searchPlaceholder="Search events by title, venue, theme, description..."
+                  statusFilter={statusFilter}
+                  onStatusChange={setStatusFilter}
+                  categoryFilter={categoryFilter}
+                  onCategoryChange={setCategoryFilter}
+                  sortBy={sortBy}
+                  onSortChange={setSortBy}
+                  totalCount={events.length}
+                  filteredCount={filteredEvents.length}
+                  itemLabel="events"
+                />
+
                 {loading ? (
                   <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 text-neon-red animate-spin" /></div>
                 ) : (
                   <div className="space-y-4">
-                    {events.map(event => (
+                    {filteredEvents.map(event => (
                       <div key={event.id} className="flex items-center justify-between p-4 border border-white/10 rounded card-hover bg-black/40">
                         <div>
                           <h3 className="text-white font-heading text-lg">{event.title}</h3>
@@ -909,7 +1091,7 @@ export default function Admin() {
                         </div>
                       </div>
                     ))}
-                    {events.length === 0 && <p className="text-gray-400 text-center py-8">No events yet</p>}
+                    {filteredEvents.length === 0 && <p className="text-gray-400 text-center py-8">No events match your filters</p>}
                   </div>
                 )}
 
@@ -1170,6 +1352,65 @@ export default function Admin() {
               <div>
                 <h2 className="font-display text-4xl text-white mb-8">Happy Hour Coupons</h2>
                 <p className="text-gray-400">Coupon management coming soon.</p>
+              </div>
+            )}
+
+            {activeTab === "dj_vote" && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+                  <div>
+                    <h2 className="font-display text-4xl text-white">{"People's Choice DJ @ Dulce"}</h2>
+                    <p className="text-gray-400 text-sm">
+                      Moderate monthly nominations, review vote tallies, and finalize winner bookings for Dulce Last Thursday.
+                    </p>
+                  </div>
+                  <div className="px-4 py-2 bg-amber-500/20 border border-amber-500/40 text-amber-400 font-mono text-xs rounded-lg">
+                    Active Cycle: August 2026
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="border border-white/10 bg-white/[0.03] p-6 rounded-xl space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-heading text-lg text-white uppercase">Current Nominees</h3>
+                      <span className="text-xs text-amber-400 font-semibold">4 Approved</span>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-black/60 border border-white/10 rounded-lg">
+                        <div>
+                          <p className="font-bold text-white text-sm">DJ Supreme Vibes</p>
+                          <p className="text-xs text-gray-400">Classic &amp; Modern Hip-Hop</p>
+                        </div>
+                        <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded font-bold">142 Votes</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-black/60 border border-white/10 rounded-lg">
+                        <div>
+                          <p className="font-bold text-white text-sm">DJ K-Nitro</p>
+                          <p className="text-xs text-gray-400">Vinyl Breaks &amp; Underground</p>
+                        </div>
+                        <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded font-bold">118 Votes</span>
+                      </div>
+                      <div className="flex items-center justify-between p-3 bg-black/60 border border-white/10 rounded-lg">
+                        <div>
+                          <p className="font-bold text-white text-sm">DJ Amara Gold</p>
+                          <p className="text-xs text-gray-400">Afro-Fusion &amp; Golden Era R&amp;B</p>
+                        </div>
+                        <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded font-bold">95 Votes</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border border-white/10 bg-white/[0.03] p-6 rounded-xl space-y-4">
+                    <h3 className="font-heading text-lg text-white uppercase">Dulce Last Thursday Integration</h3>
+                    <p className="text-sm text-gray-300 leading-relaxed">
+                      On August 23, 2026, voting automatically locks and the top DJ receives official booking notice and event flyer feature for the August 27th Dulce event.
+                    </p>
+                    <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-200 space-y-1">
+                      <p className="font-bold">Next Milestone:</p>
+                      <p>Voting locks on Aug 23, 2026 @ 11:59 PM EST.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>

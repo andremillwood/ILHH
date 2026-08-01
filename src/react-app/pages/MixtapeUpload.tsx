@@ -4,14 +4,15 @@ import { CheckCircle, Upload } from "lucide-react";
 import Navigation from "@/react-app/components/Navigation";
 import Footer from "@/react-app/components/Footer";
 import { useAuth, useAuthHeader } from "@/lib/AuthContext";
-import { supabase } from "@/lib/supabase";
 import { slugify } from "@/react-app/lib/platform";
+import { uploadToR2 } from "@/react-app/lib/r2Upload";
 
 export default function MixtapeUpload() {
   const { user, loading, signInWithGoogle } = useAuth();
   const authHeader = useAuthHeader();
   const navigate = useNavigate();
   const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [coverFile, setCoverFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     dj_name: "",
@@ -35,19 +36,12 @@ export default function MixtapeUpload() {
 
     try {
       const slug = `${slugify(formData.title)}-${Date.now()}`;
-      const fileExt = audioFile.name.split(".").pop() || "mp3";
-      const filePath = `${user.id}/${slug}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage
-        .from("mixes")
-        .upload(filePath, audioFile, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: audioFile.type || "audio/mpeg",
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage.from("mixes").getPublicUrl(filePath);
+      const publicUrl = await uploadToR2(audioFile, "mix", authHeader);
+      let coverArtUrl = formData.cover_art_url;
+      if (coverFile) {
+        setProgressText("Uploading cover artwork...");
+        coverArtUrl = await uploadToR2(coverFile, "artwork", authHeader);
+      }
       setProgressText("Saving mix details...");
 
       const response = await fetch("/api/mixtapes", {
@@ -59,6 +53,7 @@ export default function MixtapeUpload() {
         body: JSON.stringify({
           ...formData,
           slug,
+          cover_art_url: coverArtUrl,
           audio_url: publicUrl,
           download_url: publicUrl,
           release_date: new Date().toISOString().slice(0, 10),
@@ -125,12 +120,23 @@ export default function MixtapeUpload() {
             />
           </label>
 
+          <label className="block">
+            <span className="block text-white font-heading mb-2">Cover Artwork</span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(event) => setCoverFile(event.target.files?.[0] || null)}
+              className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading"
+            />
+            <span className="block mt-2 text-xs text-gray-500 font-heading">JPG, PNG, or WebP. Square artwork works best.</span>
+          </label>
+
           <div className="grid md:grid-cols-2 gap-5">
             <Input label="Mix Title *" value={formData.title} onChange={(value) => setFormData({ ...formData, title: value })} required />
             <Input label="DJ / Artist Name *" value={formData.dj_name} onChange={(value) => setFormData({ ...formData, dj_name: value })} required />
             <Input label="Genre" value={formData.genre} onChange={(value) => setFormData({ ...formData, genre: value })} />
             <Input label="Tags" value={formData.tags} onChange={(value) => setFormData({ ...formData, tags: value })} />
-            <Input label="Cover Art URL" value={formData.cover_art_url} onChange={(value) => setFormData({ ...formData, cover_art_url: value })} />
+            <Input label="Cover Art URL (optional alternative)" value={formData.cover_art_url} onChange={(value) => setFormData({ ...formData, cover_art_url: value })} />
           </div>
 
           <label className="flex items-center text-white font-heading">

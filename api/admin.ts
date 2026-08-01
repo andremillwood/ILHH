@@ -5,7 +5,13 @@ import { emailSenders, sendBrandedEmail, siteUrl } from './_lib/email.js';
 import { syncPrintfulOrderStatus, logOrderEvent } from './_lib/orders.js';
 import { syncPrintfulProducts } from './_lib/printful-sync.js';
 
-const ADMIN_EMAILS = ['andremillwood@gmail.com', 'admin@ilovehiphopja.com'];
+const ADMIN_EMAILS = (process.env.ADMIN_NOTIFY_EMAILS || 'andremillwood@gmail.com,admin@ilovehiphopja.com')
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
+const ADMIN_PERMISSION_KEYS = ['events', 'rsvps', 'galleries', 'mixtapes', 'members', 'orders', 'content', 'analytics', 'settings'] as const;
+const SUPERADMIN_EMAILS = ['andremillwood@gmail.com'];
 
 const EventSchema = z.object({
     title: z.string().min(1),
@@ -19,6 +25,22 @@ const EventSchema = z.object({
     flyer_url: z.string().optional(),
     is_featured: z.boolean().optional(),
     is_special: z.boolean().optional(),
+    djs: z.array(z.object({
+        dj_name: z.string().min(1),
+        dj_description: z.string().optional().nullable(),
+        is_resident: z.boolean().optional(),
+    })).optional(),
+});
+
+const AdminUserUpdateSchema = z.object({
+    member_role: z.enum(['fan', 'dj', 'artist', 'promoter', 'venue', 'media', 'admin']),
+    admin_permissions: z.array(z.enum(ADMIN_PERMISSION_KEYS)).optional(),
+});
+
+const AdminAccessReviewSchema = z.object({
+    action: z.enum(['approve', 'reject']),
+    admin_permissions: z.array(z.enum(ADMIN_PERMISSION_KEYS)).optional(),
+    review_notes: z.string().max(2000).optional(),
 });
 
 const GallerySchema = z.object({
@@ -185,6 +207,31 @@ const OrderUpdateSchema = z.object({
     support_notes: z.string().max(2000).optional().nullable(),
 });
 
+const StorefrontProductSchema = z.object({
+    name: z.string().min(2),
+    category: z.string().min(1),
+    category_label: z.string().min(1),
+    price: z.coerce.number().min(0),
+    description: z.string().optional().nullable(),
+    story: z.string().optional().nullable(),
+    colors: z.array(z.string()).optional(),
+    sizes: z.array(z.string()).optional(),
+    image_class: z.string().optional(),
+    images: z.array(z.object({
+        color: z.string().optional(),
+        url: z.string().url(),
+        alt: z.string().optional(),
+    })).optional(),
+    badge: z.string().optional().nullable(),
+    is_active: z.boolean().optional(),
+});
+
+const StorefrontVariantSchema = z.object({
+    price: z.coerce.number().min(0).optional(),
+    availability_status: z.string().max(80).optional().nullable(),
+    is_active: z.boolean().optional(),
+});
+
 const RsvpUpdateSchema = z.object({
     status: z.enum(['pending', 'confirmed', 'waitlisted', 'cancelled', 'declined']),
 });
@@ -213,14 +260,47 @@ const getKeys = () => {
     return { supabaseUrl, supabaseAnonKey, supabaseServiceKey };
 };
 
-async function isAdmin(authHeader: string): Promise<boolean> {
+async function getAuthenticatedUser(authHeader: string) {
     const { supabaseUrl, supabaseAnonKey } = getKeys();
     const supabaseUser = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
         auth: { persistSession: false }
     });
     const { data: { user } } = await supabaseUser.auth.getUser();
-    return user?.email ? ADMIN_EMAILS.includes(user.email) : false;
+    return user || null;
+}
+
+async function isAdmin(authHeader: string): Promise<boolean> {
+    const user = await getAuthenticatedUser(authHeader);
+    const email = user?.email?.toLowerCase();
+    if (!user || !email) return false;
+    if (ADMIN_EMAILS.includes(email) || SUPERADMIN_EMAILS.includes(email)) return true;
+
+    const { supabaseUrl, supabaseServiceKey } = getKeys();
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } });
+    const { data } = await supabase
+        .from('members')
+        .select('member_role, admin_permissions')
+        .eq('user_id', user.id)
+        .maybeSingle();
+    return data?.member_role === 'admin';
+}
+
+async function replaceEventDjs(supabase: any, eventId: number, djs?: z.infer<typeof EventSchema>['djs']) {
+    if (!djs) return;
+    await supabase.from('event_djs').delete().eq('event_id', eventId);
+    const rows = djs
+        .map((dj) => ({
+            event_id: eventId,
+            dj_name: dj.dj_name.trim(),
+            dj_description: dj.dj_description || null,
+            is_resident: dj.is_resident || false,
+        }))
+        .filter((dj) => dj.dj_name);
+    if (rows.length > 0) {
+        const { error } = await supabase.from('event_djs').insert(rows);
+        if (error) throw error;
+    }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -285,6 +365,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     supabase.from('music_playlists').select('id', { count: 'exact', head: true }),
                     supabase.from('playlist_suggestions').select('id', { count: 'exact', head: true }).in('status', ['pending', 'shortlisted']),
                 ]);
+                const adminAccessRequestsResult = await supabase
+                    .from('admin_access_requests')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('status', 'pending');
 
                 return res.status(200).json({
                     totalEvents: eventsResult.count || 0,
@@ -299,6 +383,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     pendingProfileClaims: profileClaimsResult.count || 0,
                     totalPlaylists: playlistsResult.count || 0,
                     pendingPlaylistSuggestions: playlistSuggestionsResult.count || 0,
+                    pendingAdminAccessRequests: adminAccessRequestsResult.count || 0,
                 });
             }
 
@@ -513,6 +598,72 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 }
             }
 
+            if (resource === 'storefront_products') {
+                if (req.method === 'GET') {
+                    const { data, error } = await supabase
+                        .from('merch_products')
+                        .select('*, merch_product_variants(*)')
+                        .order('is_active', { ascending: false })
+                        .order('updated_at', { ascending: false })
+                        .limit(200);
+                    if (error) throw error;
+                    return res.status(200).json(data || []);
+                }
+
+                if (req.method === 'POST' && req.query.action === 'sync_printful') {
+                    const result = await syncPrintfulProducts(supabase);
+                    await logOrderEvent(supabase, null, 'storefront_products_synced', `Printful catalog synced: ${result.products} products, ${result.variants} variants.`);
+                    return res.status(200).json({ success: true, ...result });
+                }
+
+                if (req.method === 'PUT' && id) {
+                    const parseResult = StorefrontProductSchema.safeParse(req.body);
+                    if (!parseResult.success) return res.status(400).json({ error: 'Invalid product', details: parseResult.error.issues });
+                    const product = parseResult.data;
+                    const { data, error } = await supabase
+                        .from('merch_products')
+                        .update({
+                            name: product.name,
+                            category: product.category,
+                            category_label: product.category_label,
+                            price: product.price,
+                            description: product.description || null,
+                            story: product.story || null,
+                            colors: product.colors || [],
+                            sizes: product.sizes || [],
+                            image_class: product.image_class || 'from-neon-red/30 via-black to-white/10',
+                            images: product.images || [],
+                            badge: product.badge || null,
+                            is_active: product.is_active ?? true,
+                            updated_at: new Date().toISOString(),
+                        })
+                        .eq('id', String(id))
+                        .select('*, merch_product_variants(*)')
+                        .single();
+                    if (error) throw error;
+                    return res.status(200).json(data);
+                }
+            }
+
+            if (resource === 'storefront_variants') {
+                if (req.method === 'PUT' && id) {
+                    const parseResult = StorefrontVariantSchema.safeParse(req.body);
+                    if (!parseResult.success) return res.status(400).json({ error: 'Invalid variant', details: parseResult.error.issues });
+                    const { data, error } = await supabase
+                        .from('merch_product_variants')
+                        .update({
+                            ...parseResult.data,
+                            availability_status: parseResult.data.availability_status || null,
+                            updated_at: new Date().toISOString(),
+                        })
+                        .eq('id', String(id))
+                        .select('*')
+                        .single();
+                    if (error) throw error;
+                    return res.status(200).json(data);
+                }
+            }
+
             if (resource === 'orders') {
                 if (req.method === 'GET') {
                     const { data: orders, error } = await supabase
@@ -606,7 +757,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     if (rsvp.email) {
                         await sendBrandedEmail({
                             to: rsvp.email,
-                            subject: 'RSVP status update | I Love Hip Hop JA',
+                            subject: 'RSVP status update | This Is Hip Hop Caribbean Events',
                             preview: `Your RSVP is now ${parseResult.data.status}.`,
                             from: emailSenders.events,
                             eyebrow: 'RSVP Update',
@@ -679,7 +830,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     if (updated.promoter_email) {
                         await sendBrandedEmail({
                             to: updated.promoter_email,
-                            subject: `Event submission ${nextStatus} | I Love Hip Hop JA`,
+                            subject: `Event submission ${nextStatus} | This Is Hip Hop Caribbean Events`,
                             preview: `${updated.event_title} has been ${nextStatus}.`,
                             from: emailSenders.events,
                             eyebrow: 'Event Submission',
@@ -727,6 +878,139 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 return res.status(200).json(data || []);
             }
 
+            if (resource === 'admin_users') {
+                if (req.method === 'GET') {
+                    const { data, error } = await supabase
+                        .from('members')
+                        .select('id, user_id, email, first_name, last_name, instagram_handle, member_role, admin_permissions, created_at')
+                        .order('created_at', { ascending: false })
+                        .limit(300);
+                    if (error) throw error;
+                    return res.status(200).json((data || []).map((member: any) => {
+                        const email = String(member.email || '').toLowerCase();
+                        const isSuperadmin = SUPERADMIN_EMAILS.includes(email);
+                        const isBootstrapAdmin = ADMIN_EMAILS.includes(email) || isSuperadmin;
+                        return {
+                            ...member,
+                            member_role: isSuperadmin ? 'admin' : member.member_role,
+                            admin_permissions: isSuperadmin ? [...ADMIN_PERMISSION_KEYS] : (member.admin_permissions || []),
+                            is_bootstrap_admin: isBootstrapAdmin,
+                            is_superadmin: isSuperadmin,
+                        };
+                    }));
+                }
+                if (req.method === 'PUT' && id) {
+                    const parseResult = AdminUserUpdateSchema.safeParse(req.body);
+                    if (!parseResult.success) return res.status(400).json({ error: 'Invalid admin user update', details: parseResult.error.issues });
+                    const { data: existingMember, error: existingError } = await supabase
+                        .from('members')
+                        .select('email')
+                        .eq('id', parseInt(id as string))
+                        .single();
+                    if (existingError) throw existingError;
+                    if (SUPERADMIN_EMAILS.includes(String(existingMember.email || '').toLowerCase())) {
+                        return res.status(403).json({ error: 'Superadmin access cannot be changed from the admin console.' });
+                    }
+
+                    const { data, error } = await supabase
+                        .from('members')
+                        .update({
+                            member_role: parseResult.data.member_role,
+                            admin_permissions: parseResult.data.member_role === 'admin' ? (parseResult.data.admin_permissions || []) : [],
+                            updated_at: new Date().toISOString(),
+                        })
+                        .eq('id', parseInt(id as string))
+                        .select('id, email, first_name, last_name, member_role, admin_permissions')
+                        .single();
+                    if (error) throw error;
+                    return res.status(200).json(data);
+                }
+            }
+
+            if (resource === 'admin_access_requests') {
+                if (req.method === 'GET') {
+                    const { data, error } = await supabase
+                        .from('admin_access_requests')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .limit(200);
+                    if (error) throw error;
+                    return res.status(200).json(data || []);
+                }
+
+                if (req.method === 'PUT' && id) {
+                    const parseResult = AdminAccessReviewSchema.safeParse(req.body);
+                    if (!parseResult.success) return res.status(400).json({ error: 'Invalid admin access review', details: parseResult.error.issues });
+
+                    const { data: request, error: requestError } = await supabase
+                        .from('admin_access_requests')
+                        .select('*')
+                        .eq('id', parseInt(id as string))
+                        .single();
+                    if (requestError) throw requestError;
+
+                    const email = String(request.email || '').toLowerCase();
+                    const permissions = parseResult.data.admin_permissions?.length
+                        ? parseResult.data.admin_permissions
+                        : (request.requested_permissions || []);
+                    let memberId = request.member_id;
+
+                    if (parseResult.data.action === 'approve') {
+                        const { data: member } = await supabase
+                            .from('members')
+                            .select('id, email')
+                            .eq('email', email)
+                            .maybeSingle();
+                        memberId = member?.id || memberId || null;
+                        if (memberId) {
+                            const { error: memberError } = await supabase
+                                .from('members')
+                                .update({
+                                    member_role: 'admin',
+                                    admin_permissions: permissions,
+                                    updated_at: new Date().toISOString(),
+                                })
+                                .eq('id', memberId);
+                            if (memberError) throw memberError;
+                        }
+                    }
+
+                    const nextStatus = parseResult.data.action === 'approve' ? 'approved' : 'rejected';
+                    const { data: updated, error } = await supabase
+                        .from('admin_access_requests')
+                        .update({
+                            status: nextStatus,
+                            member_id: memberId,
+                            review_notes: parseResult.data.review_notes || null,
+                            reviewed_at: new Date().toISOString(),
+                            reviewed_by: 'admin',
+                            updated_at: new Date().toISOString(),
+                        })
+                        .eq('id', parseInt(id as string))
+                        .select('*')
+                        .single();
+                    if (error) throw error;
+
+                    await sendBrandedEmail({
+                        to: updated.email,
+                        subject: `Admin access ${nextStatus} | This Is Hip Hop Caribbean`,
+                        preview: `Your admin access request was ${nextStatus}.`,
+                        from: emailSenders.ops,
+                        eyebrow: 'Admin Access',
+                        title: `Request ${nextStatus}`,
+                        intro: nextStatus === 'approved'
+                            ? memberId
+                                ? 'Your account has been approved for platform admin access. Sign in with the same email and open the admin console.'
+                                : 'Your admin access request was approved. Create or complete your membership with this same email so we can attach the approved permissions.'
+                            : 'Your admin access request was reviewed and not approved at this time.',
+                        sections: [{ title: 'Review', rows: [['Status', nextStatus], ['Permissions', permissions.join(', ') || 'General admin'], ['Notes', parseResult.data.review_notes]] }],
+                        action: nextStatus === 'approved' ? { label: memberId ? 'Open Admin' : 'Complete Membership', url: siteUrl(memberId ? '/admin' : '/membership') } : undefined,
+                    });
+
+                    return res.status(200).json(updated);
+                }
+            }
+
             // --- Events ---
             if (resource === 'events') {
                 if (req.method === 'GET') {
@@ -740,15 +1024,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 if (req.method === 'POST') {
                     const parseResult = EventSchema.safeParse(req.body);
                     if (!parseResult.success) return res.status(400).json({ error: 'Invalid data', details: parseResult.error.issues });
-                    const { data: event, error } = await supabase.from('events').insert(parseResult.data).select().single();
+                    const { djs, ...eventPayload } = parseResult.data;
+                    const { data: event, error } = await supabase.from('events').insert(eventPayload).select().single();
                     if (error) throw error;
+                    await replaceEventDjs(supabase, event.id, djs);
                     return res.status(201).json(event);
                 }
                 if (req.method === 'PUT' && id) {
                     const parseResult = EventSchema.safeParse(req.body);
                     if (!parseResult.success) return res.status(400).json({ error: 'Invalid data', details: parseResult.error.issues });
-                    const { data: event, error } = await supabase.from('events').update(parseResult.data).eq('id', parseInt(id as string)).select().single();
+                    const { djs, ...eventPayload } = parseResult.data;
+                    const { data: event, error } = await supabase.from('events').update(eventPayload).eq('id', parseInt(id as string)).select().single();
                     if (error) throw error;
+                    await replaceEventDjs(supabase, event.id, djs);
                     return res.status(200).json(event);
                 }
                 if (req.method === 'DELETE' && id) {

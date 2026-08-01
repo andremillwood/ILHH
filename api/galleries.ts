@@ -1,6 +1,23 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 
+const baseGallerySelect = '*, events(id, title, event_date, venue_name)';
+const gallerySelectWithImages = `${baseGallerySelect}, event_gallery_images(*)`;
+
+async function fetchGalleries(supabase: any, eventId?: number, includeImages = true) {
+    let query = supabase
+        .from('galleries')
+        .select(includeImages ? gallerySelectWithImages : baseGallerySelect)
+        .or('status.is.null,status.eq.published')
+        .order('created_at', { ascending: false });
+
+    if (eventId) {
+        query = query.eq('event_id', eventId);
+    }
+
+    return query;
+}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,15 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const { createClient } = await import('@supabase/supabase-js');
         const supabase = createClient(supabaseUrl!, supabaseAnonKey!);
 
-        let query = supabase
-            .from('galleries')
-            .select('*, events(id, title, event_date, venue_name), event_gallery_images(*)')
-            .or('status.is.null,status.eq.published')
-            .order('created_at', { ascending: false });
-        if (req.query.event_id) {
-            query = query.eq('event_id', Number(req.query.event_id));
+        const eventId = req.query.event_id ? Number(req.query.event_id) : undefined;
+        let { data: galleries, error } = await fetchGalleries(supabase, eventId);
+
+        if (error && /event_gallery_images|relationship|schema cache/i.test(error.message || '')) {
+            console.warn('Gallery image relationship unavailable, falling back to gallery records:', error.message);
+            const fallback = await fetchGalleries(supabase, eventId, false);
+            galleries = fallback.data?.map((gallery: any) => ({ ...gallery, event_gallery_images: [] })) || [];
+            error = fallback.error;
         }
-        const { data: galleries, error } = await query;
 
         if (error) {
             console.error('Error fetching galleries:', error);

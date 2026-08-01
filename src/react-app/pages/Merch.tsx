@@ -17,23 +17,23 @@ export default function Merch() {
     <div className="min-h-screen bg-black graffiti-texture">
       <Navigation />
 
-      <section className="relative min-h-[92vh] pt-28 px-4 overflow-hidden flex items-center">
+      <section className="relative flex min-h-[92vh] items-center overflow-hidden border-b-8 border-neon-red px-4 pt-28">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,23,68,0.28),transparent_32%),radial-gradient(circle_at_75%_35%,rgba(255,255,255,0.12),transparent_28%)]" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/80 to-black" />
         <div className="relative z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-[1.05fr_0.95fr] gap-10 items-center">
           <div>
-            <p className="text-neon-red font-heading uppercase tracking-[0.35em] mb-4">Official Store</p>
-            <h1 className="font-display text-6xl md:text-9xl mb-6 neon-text-simple animate-glow-pulse">
+            <span className="press-label mb-5">Official Kingston drop</span>
+            <h1 className="mb-6 font-display text-6xl uppercase leading-[0.88] text-white md:text-9xl">
               WEAR THE MOVEMENT
             </h1>
-            <p className="text-xl md:text-2xl text-gray-200 font-heading mb-8 max-w-3xl">
+            <p className="mb-8 max-w-3xl border-l-4 border-neon-red pl-5 font-body text-lg leading-8 text-gray-200 md:text-xl">
               The This Is Hip Hop Caribbean store connects event culture, streetwear, DJs, promoters, members, and affiliate drops in one ecommerce experience.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-10">
-              <a href="#products" className="px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider text-center">
+              <a href="#products" className="press-button">
                 Shop The Drop
               </a>
-              <a href="#cart" className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase tracking-wider text-center">
+              <a href="#cart" className="press-button-secondary">
                 Cart ({cart.itemCount})
               </a>
             </div>
@@ -52,7 +52,7 @@ export default function Merch() {
           </div>
 
           <div className="relative">
-            <div className="neon-border bg-black/80 p-6 md:p-8 rotate-1">
+            <div className="press-panel rotate-1 p-4 md:p-6">
               <div className={`aspect-[4/5] bg-gradient-to-br ${featuredProduct.imageClass} relative flex items-center justify-center mb-6 overflow-hidden`}>
                 <div className="absolute top-6 left-6 px-4 py-2 bg-neon-red text-black font-heading uppercase tracking-wider text-xs">
                   Featured Drop
@@ -86,11 +86,12 @@ export default function Merch() {
         </div>
       </section>
 
-      <section id="products" className="py-16 px-4 bg-gradient-to-b from-black to-neon-red/5">
+      <section id="products" className="bg-[#111] px-4 py-20">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
             <div>
-              <h2 className="font-display text-5xl md:text-7xl text-white mb-3">FEATURED MERCH</h2>
+              <span className="press-label mb-4">Current catalogue</span>
+              <h2 className="mb-3 font-display text-5xl uppercase text-white md:text-7xl">FEATURED MERCH</h2>
               <p className="text-gray-400 font-heading text-lg">
                 Shop across the full drop or move into a dedicated category page for a tighter product experience.
               </p>

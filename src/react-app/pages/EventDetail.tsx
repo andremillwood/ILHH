@@ -110,8 +110,8 @@ export default function EventDetail() {
             </p>
             {designated && (
               <div className="mb-8 border border-neon-red/50 bg-neon-red/10 p-4">
-                <p className="text-neon-red font-heading uppercase text-sm mb-1">RSVP Perk</p>
-                <p className="text-gray-200 font-heading">Complimentary shots plus selected 2-for-1 Wray & Nephew or Kingston 62 deals. Book a table and receive a complimentary hookah on orders of J$15,000 or more.</p>
+                <p className="text-neon-red font-heading uppercase text-sm mb-1">Member + RSVP Perks</p>
+                <p className="text-gray-200 font-heading">Become an ILHH member and RSVP to access complimentary tequila shots plus selected 2-for-1 Wray & Nephew or Kingston 62 deals. Book a table and receive a complimentary hookah on orders of J$15,000 or more.</p>
               </div>
             )}
 
@@ -133,6 +133,11 @@ export default function EventDetail() {
               {designated && (
                 <Link to={`/rsvp/${event.id}`} className="px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider text-center">
                   RSVP & Reserve Table
+                </Link>
+              )}
+              {designated && (
+                <Link to="/membership" className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase tracking-wider text-center">
+                  Become A Member
                 </Link>
               )}
               <ShareButtons

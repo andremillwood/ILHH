@@ -8,6 +8,7 @@ import CartPanel from "@/react-app/components/merch/CartPanel";
 import { useCart } from "@/react-app/lib/CartContext";
 import { getMerchProduct } from "@/react-app/lib/merchProducts";
 import { useMerchCatalog } from "@/react-app/lib/useMerchCatalog";
+import { normalizeImageUrl } from "@/react-app/lib/imageUrls";
 
 export default function MerchProduct() {
   const { productId } = useParams();
@@ -79,8 +80,10 @@ export default function MerchProduct() {
   const colorImageIndex = product.images.findIndex((image) => image.color === activeColor);
   const safeImageIndex = product.images[selectedImageIndex] ? selectedImageIndex : Math.max(colorImageIndex, 0);
   const selectedImage = product.images[safeImageIndex] || product.images[0];
+  const selectedImageUrl = normalizeImageUrl(selectedImage?.url);
   const selectedVariant = product.variants.find((variant) => variant.color === activeColor && variant.size === activeSize);
-  const isUnavailable = !selectedVariant || ["out_of_stock", "temporary_out_of_stock", "discontinued"].includes(selectedVariant.availabilityStatus || "");
+  const isPreviewOnly = !selectedVariant?.printfulVariantId;
+  const isUnavailable = !selectedVariant || isPreviewOnly || ["out_of_stock", "temporary_out_of_stock", "discontinued"].includes(selectedVariant.availabilityStatus || "");
   const showPreviousImage = () => setSelectedImageIndex((current) => (current - 1 + product.images.length) % product.images.length);
   const showNextImage = () => setSelectedImageIndex((current) => (current + 1) % product.images.length);
 
@@ -102,7 +105,7 @@ export default function MerchProduct() {
 
           <div className="grid lg:grid-cols-[0.95fr_1.05fr] gap-10 mt-8">
             <div>
-              <div className={`neon-border bg-gradient-to-br ${product.imageClass} min-h-[560px] relative flex items-center justify-center overflow-hidden`}>
+              <div className={`border border-white/20 bg-gradient-to-br ${product.imageClass} min-h-[560px] relative flex items-center justify-center overflow-hidden`}>
                 {product.badge && (
                   <span className="absolute top-6 left-6 z-10 px-4 py-2 bg-neon-red text-black font-heading uppercase tracking-wider text-xs">
                     {product.badge}
@@ -128,7 +131,7 @@ export default function MerchProduct() {
                 )}
                 <button type="button" onClick={() => setLightboxOpen(true)} className="absolute inset-0">
                   <img
-                    src={selectedImage.url}
+                    src={selectedImageUrl}
                     alt={selectedImage.alt}
                     className="h-full w-full object-cover"
                   />
@@ -150,7 +153,7 @@ export default function MerchProduct() {
                       }}
                       className={`aspect-square overflow-hidden border bg-black ${safeImageIndex === index ? "border-neon-red" : "border-white/15 hover:border-neon-red/70"}`}
                     >
-                      <img src={image.url} alt={image.alt} className="h-full w-full object-cover" />
+                      <img src={normalizeImageUrl(image.url)} alt={image.alt} className="h-full w-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -161,13 +164,13 @@ export default function MerchProduct() {
               </div>
             </div>
 
-            <div className="neon-border bg-black/80 p-8 md:p-10">
-              <p className="text-neon-red font-heading uppercase tracking-[0.35em] mb-4">{product.categoryLabel}</p>
-              <h1 className="font-display text-6xl md:text-8xl text-white mb-4">
+            <div className="border-t-8 border-neon-red bg-[#e9e4da] p-8 text-black md:p-10">
+              <p className="mb-4 font-heading font-bold uppercase tracking-[0.35em] text-[#8f0710]">{product.categoryLabel}</p>
+              <h1 className="mb-4 font-display text-6xl uppercase leading-none text-black md:text-8xl">
                 {product.name}
               </h1>
-              <p className="text-3xl text-neon-red font-heading mb-6">${product.price.toFixed(2)}</p>
-              <p className="text-xl text-gray-300 font-heading mb-8">
+              <p className="mb-6 font-heading text-3xl font-bold text-black">${product.price.toFixed(2)}</p>
+              <p className="mb-8 font-body text-lg leading-8 text-black/70">
                 {product.story}
               </p>
 
@@ -181,7 +184,7 @@ export default function MerchProduct() {
                       onClick={() => selectColor(color)}
                       className={`px-4 py-3 border font-heading transition ${activeColor === color
                         ? "border-neon-red bg-neon-red text-black"
-                        : "border-white/20 text-gray-300 hover:border-neon-red"
+                        : "border-black/30 text-black hover:border-neon-red"
                         }`}
                     >
                       {color}
@@ -200,7 +203,7 @@ export default function MerchProduct() {
                       onClick={() => setSelectedSize(size)}
                       className={`min-w-12 h-12 px-4 border font-heading flex items-center justify-center transition ${activeSize === size
                         ? "border-neon-red bg-neon-red text-black"
-                        : "border-neon-red/50 text-white hover:border-neon-red"
+                        : "border-black/30 text-black hover:border-neon-red"
                         }`}
                     >
                       {size}
@@ -215,15 +218,15 @@ export default function MerchProduct() {
                   if (!isUnavailable) cart.addItem(product, activeColor, activeSize);
                 }}
                 disabled={isUnavailable}
-                className="w-full px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider mb-8 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mb-8 w-full bg-neon-red px-8 py-4 font-heading text-xl font-bold uppercase tracking-wider text-black transition hover:bg-black hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isUnavailable ? "Unavailable" : "Add To Cart"}
+                {isPreviewOnly ? "Preview Drop - Configure Fulfillment" : isUnavailable ? "Unavailable" : "Add To Cart"}
               </button>
 
-              <div className="mb-8 border border-white/10 bg-white/[0.03] p-5">
+              <div className="mb-8 border border-black/20 bg-white/50 p-5">
                 <h2 className="font-heading text-neon-red uppercase tracking-wider mb-3">Size, Stock & Shipping</h2>
-                <div className="grid gap-3 text-gray-300 font-heading text-sm leading-relaxed">
-                  <p>Selected: {activeColor} / {activeSize}. {isUnavailable ? "This option is not currently available." : "This option is available for checkout."}</p>
+                <div className="grid gap-3 font-body text-sm leading-relaxed text-black/70">
+                  <p>Selected: {activeColor} / {activeSize}. {isPreviewOnly ? "This drop is live as a storefront preview. Add Printful variant IDs in the catalog before checkout." : isUnavailable ? "This option is not currently available." : "This option is available for checkout."}</p>
                   <p>Production is made to order after payment. Expect fulfillment to begin before carrier shipping; exact delivery timing depends on destination, carrier, customs, and stock status.</p>
                   <p>Use your usual size for a standard fit. For a roomier streetwear fit, size up where available. Hats are one size unless the product options show otherwise.</p>
                 </div>
@@ -285,7 +288,7 @@ export default function MerchProduct() {
             </>
           )}
           <div className="max-w-6xl w-full">
-            <img src={selectedImage.url} alt={selectedImage.alt} className="max-h-[78vh] w-full object-contain" />
+            <img src={selectedImageUrl} alt={selectedImage.alt} className="max-h-[78vh] w-full object-contain" />
             <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="font-heading text-white uppercase tracking-[0.25em]">{product.name}</p>
@@ -303,7 +306,7 @@ export default function MerchProduct() {
                     className={`h-14 w-14 overflow-hidden border ${safeImageIndex === index ? "border-neon-red" : "border-white/20"}`}
                     aria-label={`View ${image.color} mockup`}
                   >
-                    <img src={image.url} alt="" className="h-full w-full object-cover" />
+                    <img src={normalizeImageUrl(image.url)} alt="" className="h-full w-full object-cover" />
                   </button>
                 ))}
               </div>

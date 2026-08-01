@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1068.0",
+    "@aws-sdk/s3-request-presigner": "^3.1068.0",
     "@supabase/supabase-js": "^2.45.0",
     "@types/qrcode": "^1.5.6",
     "lucide-react": "^0.510.0",
@@ -36,6 +38,8 @@
     "content:events": "node scripts/events-csv-to-sql.mjs",
     "dev": "vite",
     "lint": "eslint .",
+    "merch:mockups": "node scripts/merch-mockups-to-sql.mjs",
+    "merch:mockups:apply": "node scripts/merch-mockups-to-sql.mjs --apply",
     "preview": "vite preview"
   }
 }

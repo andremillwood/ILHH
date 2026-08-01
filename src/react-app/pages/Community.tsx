@@ -28,12 +28,13 @@ export default function Community() {
 
       <div className="pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h1 className="font-display text-7xl md:text-9xl mb-6 neon-text">
-              THE COMMUNITY
+          <div className="mb-16 border-b-8 border-neon-red pb-8">
+            <span className="press-label mb-5">The Kingston noticeboard</span>
+            <h1 className="font-display text-7xl uppercase leading-[0.88] text-white md:text-9xl">
+              PEOPLE IN THE CULTURE
             </h1>
-            <p className="text-xl text-gray-400 font-heading mb-8">
-              Connect with fellow hip hop lovers and share your musical identity
+            <p className="mb-8 mt-6 max-w-3xl font-body text-lg leading-8 text-gray-300">
+              DJs, dancers, listeners, photographers, promoters and crews building the scene together.
             </p>
             <div className="max-w-4xl mx-auto">
               <SocialCtas />
@@ -42,7 +43,7 @@ export default function Community() {
 
           {/* Trending Section */}
           <div className="grid md:grid-cols-3 gap-6 mb-16">
-            <div className="neon-border bg-black/80 backdrop-blur-md p-8">
+            <div className="border-t-4 border-neon-red bg-black p-8">
               <Music className="w-10 h-10 text-neon-red mb-4 mx-auto" />
               <h3 className="font-heading text-xl text-white text-center mb-3">
                 Trending Songs
@@ -53,7 +54,7 @@ export default function Community() {
                 </p>
               </div>
             </div>
-            <div className="neon-border bg-black/80 backdrop-blur-md p-8">
+            <div className="border-t-4 border-white bg-black p-8">
               <Heart className="w-10 h-10 text-neon-red mb-4 mx-auto" />
               <h3 className="font-heading text-xl text-white text-center mb-3">
                 Top Albums
@@ -64,7 +65,7 @@ export default function Community() {
                 </p>
               </div>
             </div>
-            <div className="neon-border bg-black/80 backdrop-blur-md p-8">
+            <div className="border-t-4 border-neon-red bg-black p-8">
               <Quote className="w-10 h-10 text-neon-red mb-4 mx-auto" />
               <h3 className="font-heading text-xl text-white text-center mb-3">
                 Favorite Lyrics
@@ -101,7 +102,7 @@ export default function Community() {
               {members.map((member) => (
                 <div
                   key={member.id}
-                  className="neon-border bg-black/80 backdrop-blur-md p-6 hover:neon-glow transition"
+                  className="border border-white/20 bg-black p-6 transition hover:-translate-y-1 hover:border-neon-red"
                 >
                   <div className="flex items-start space-x-4 mb-4">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-neon-red to-black flex items-center justify-center">

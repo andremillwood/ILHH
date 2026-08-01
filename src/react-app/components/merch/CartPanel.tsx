@@ -35,14 +35,14 @@ export default function CartPanel() {
 
   return (
     <div className="grid lg:grid-cols-[1fr_380px] gap-8">
-      <div className="neon-border bg-black/80 p-8">
+      <div className="border border-white/20 bg-black p-8">
         <h2 className="font-display text-5xl text-white mb-6">SHOPPING CART</h2>
         {cart.items.length === 0 ? (
           <p className="text-gray-400 font-heading">Your cart is empty.</p>
         ) : (
           <div className="space-y-4">
             {cart.items.map((item) => (
-              <div key={item.variantId} className="border border-neon-red/30 p-4 grid md:grid-cols-[1fr_auto] gap-4">
+              <div key={item.variantId} className="grid gap-4 border-b border-white/20 py-5 md:grid-cols-[1fr_auto]">
                 <div>
                   <h3 className="font-heading text-xl text-white">{item.name}</h3>
                   <p className="text-gray-400 font-heading text-sm">
@@ -82,23 +82,23 @@ export default function CartPanel() {
         )}
       </div>
 
-      <aside className="neon-border bg-black/80 p-8 h-fit">
-        <h2 className="font-display text-4xl text-white mb-5">ORDER SUMMARY</h2>
+      <aside className="h-fit bg-[#e9e4da] p-8 text-black lg:sticky lg:top-28">
+        <h2 className="mb-5 font-display text-4xl uppercase text-black">ORDER SUMMARY</h2>
         <div className="space-y-3 border-b border-neon-red/30 pb-5 mb-5">
-          <div className="flex justify-between text-gray-300 font-heading">
+          <div className="flex justify-between font-heading text-black/70">
             <span>Items</span>
             <span>{cart.itemCount}</span>
           </div>
-          <div className="flex justify-between text-white font-heading text-xl">
+          <div className="flex justify-between font-heading text-xl font-bold text-black">
             <span>Subtotal</span>
             <span>${cart.subtotal.toFixed(2)}</span>
           </div>
-          <p className="text-gray-500 font-heading text-sm">
+          <p className="font-body text-sm leading-6 text-black/60">
             Taxes, shipping, and pickup options are finalized during checkout.
           </p>
         </div>
 
-        <label className="block text-white font-heading mb-2">Affiliate / Promoter Code</label>
+        <label className="mb-2 block font-heading font-bold uppercase text-black">Affiliate / Promoter Code</label>
         <div className="flex mb-5">
           <span className="px-3 py-3 border border-r-0 border-neon-red/50 text-neon-red">
             <Tag className="w-5 h-5" />
@@ -108,7 +108,7 @@ export default function CartPanel() {
             value={cart.affiliateCode || ""}
             onChange={(event) => cart.setAffiliateCode(event.target.value)}
             placeholder="DJ or promoter code"
-            className="w-full px-4 py-3 bg-black border border-neon-red/50 text-white font-heading focus:border-neon-red focus:outline-none placeholder-gray-600"
+            className="w-full border border-black/30 bg-white px-4 py-3 font-heading text-black placeholder-black/40 focus:border-neon-red focus:outline-none"
           />
         </div>
 
@@ -122,7 +122,7 @@ export default function CartPanel() {
           type="button"
           disabled={cart.items.length === 0 || checkingOut}
           onClick={handleCheckout}
-          className="w-full px-6 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading uppercase tracking-wider disabled:opacity-50"
+          className="w-full bg-neon-red px-6 py-4 font-heading text-lg font-bold uppercase tracking-wider text-black transition hover:bg-black hover:text-white disabled:opacity-50"
         >
           {checkingOut ? "Opening Checkout..." : "Secure Checkout"}
         </button>

@@ -32,23 +32,23 @@ export default function MerchCategory() {
     <div className="min-h-screen bg-black graffiti-texture">
       <Navigation />
 
-      <section className="pt-32 pb-16 px-4 bg-gradient-to-b from-neon-red/10 to-black">
+      <section className="border-b-8 border-neon-red px-4 pb-16 pt-32">
         <div className="max-w-7xl mx-auto">
           <Link to="/merch" className="text-neon-red font-heading uppercase tracking-wider hover:text-white transition">
             Store / {category.label}
           </Link>
           <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-end mt-6">
             <div>
-              <h1 className="font-display text-7xl md:text-9xl neon-text-simple mb-6">
+              <h1 className="mb-6 font-display text-7xl uppercase leading-[0.88] text-white md:text-9xl">
                 {category.label}
               </h1>
               <p className="text-xl text-gray-300 font-heading max-w-3xl">
                 {category.description}
               </p>
             </div>
-            <div className="neon-border bg-black/80 p-5">
+            <div className="border-t-4 border-neon-red bg-[#e9e4da] p-5 text-black">
               <p className="font-display text-5xl text-neon-red">{products.length}</p>
-              <p className="text-white font-heading uppercase tracking-wider">Products</p>
+              <p className="font-heading font-bold uppercase tracking-wider text-black">Products</p>
             </div>
           </div>
 

@@ -33,7 +33,7 @@ export default function PolicyPage({ fixedSlug }: PolicyPageProps) {
       <main className="pt-32 pb-20 px-4">
         <div className="max-w-4xl mx-auto">
           <Link to="/" className="text-neon-red font-heading uppercase tracking-wider hover:text-white transition">
-            I Love Hip Hop JA / Policy
+            This Is Hip Hop Caribbean / Policy
           </Link>
           <section className="neon-border bg-black/80 p-8 md:p-12 mt-8">
             <h1 className="font-display text-5xl md:text-7xl text-white mb-6">{policy?.title || "Policy"}</h1>

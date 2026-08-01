@@ -82,7 +82,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await Promise.all([
             sendBrandedEmail({
                 to: data.email,
-                subject: 'RSVP received | I Love Hip Hop JA',
+                subject: 'RSVP received | This Is Hip Hop Caribbean Events',
                 preview: 'Your RSVP has been received and is pending review.',
                 from: emailSenders.events,
                 eyebrow: 'RSVP Received',

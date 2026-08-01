@@ -68,9 +68,9 @@ export default function MixtapeDetail() {
     <div className="min-h-screen bg-black graffiti-texture">
       <Navigation />
 
-      <section className="pt-32 pb-16 px-4 bg-gradient-to-b from-neon-red/10 to-black">
+      <section className="border-b-8 border-neon-red px-4 pb-16 pt-32">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-[420px_1fr] gap-10 items-center">
-          <div className="neon-border bg-black/80 aspect-square overflow-hidden flex items-center justify-center">
+          <div className="press-panel flex aspect-square rotate-[-1deg] items-center justify-center overflow-hidden bg-black">
             {mix.cover_art_url ? (
               <img src={mix.cover_art_url} alt={mix.title} className="w-full h-full object-cover" />
             ) : (
@@ -78,8 +78,8 @@ export default function MixtapeDetail() {
             )}
           </div>
           <div>
-            <p className="text-neon-red font-heading uppercase tracking-[0.35em] mb-4">{mix.genre || "Mixtape"}</p>
-            <h1 className="font-display text-7xl md:text-9xl text-white mb-4">{mix.title}</h1>
+            <span className="press-label mb-5">{mix.genre || "Mixtape"}</span>
+            <h1 className="mb-4 font-display text-7xl uppercase leading-[0.88] text-white md:text-9xl">{mix.title}</h1>
             <p className="text-3xl text-neon-red font-heading mb-6">DJ {mix.dj_name}</p>
             {mix.description && <p className="text-xl text-gray-300 font-heading max-w-3xl mb-8">{mix.description}</p>}
             <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -87,7 +87,7 @@ export default function MixtapeDetail() {
                 type="button"
                 onClick={togglePlay}
                 disabled={!mix.audio_url}
-                className="px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider flex items-center justify-center disabled:opacity-50"
+                className="press-button disabled:opacity-50"
               >
                 {playing ? <Pause className="w-6 h-6 mr-3" /> : <Play className="w-6 h-6 mr-3" />}
                 {playing ? "Pause" : "Play Mix"}
@@ -96,7 +96,7 @@ export default function MixtapeDetail() {
                 <button
                   type="button"
                   onClick={downloadMix}
-                  className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase tracking-wider flex items-center justify-center"
+                  className="press-button-secondary"
                 >
                   <Download className="w-6 h-6 mr-3" />
                   Download

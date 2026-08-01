@@ -8,7 +8,7 @@ import { createServerClient, createUserClient } from './_lib/supabase.js';
 const fallbackPolicies: Record<string, { title: string; body: string }> = {
     terms: {
         title: 'Terms of Service',
-        body: `Welcome to I Love Hip Hop JA. These Terms of Service explain the rules for using our website, attending or RSVP'ing for events, submitting community listings, joining membership experiences, purchasing merch, streaming or uploading mixtape content, and contacting our support team.
+        body: `Welcome to This Is Hip Hop Caribbean. These Terms of Service explain the rules for using our website, attending or RSVP'ing for events, submitting community listings, joining membership experiences, purchasing merch, streaming or uploading mixtape content, and contacting our support team.
 
 Our platform exists to connect Jamaica's hip hop community with events, music, creators, promoters, venues, culture, and commerce. By using the site, you agree to use it with respect for the community, the artists, the venues, and the people whose work appears here.
 
@@ -18,15 +18,15 @@ Event details are provided for discovery and community coordination. Times, venu
 
 Merch purchases are subject to payment verification, product availability, fulfillment partner requirements, production timing, shipping carrier performance, customs, and our refund and shipping policies. Payment processing is handled by Stripe. Made-to-order items may not be cancellable once production begins.
 
-You may only submit or upload content that you have the right to share, including flyers, artist images, descriptions, audio, mixes, profile information, and event details. You keep ownership of your content, but you grant I Love Hip Hop JA permission to display, promote, format, edit for clarity, distribute, and use it in connection with the platform and our community channels. Do not submit infringing, misleading, hateful, abusive, fraudulent, sexually exploitative, or unlawful content.
+You may only submit or upload content that you have the right to share, including flyers, artist images, descriptions, audio, mixes, profile information, and event details. You keep ownership of your content, but you grant This Is Hip Hop Caribbean permission to display, promote, format, edit for clarity, distribute, and use it in connection with the platform and our community channels. Do not submit infringing, misleading, hateful, abusive, fraudulent, sexually exploitative, or unlawful content.
 
-The I Love Hip Hop JA name, platform design, logos, editorial copy, collections, and original materials are protected by intellectual property rights. You may not copy, scrape, resell, impersonate, interfere with, or misuse the platform or its systems.
+The This Is Hip Hop Caribbean platform name, design, logos, editorial copy, collections, and original materials are protected by intellectual property rights. I Luv Hip Hop is our signature event and merchandise brand. You may not copy, scrape, resell, impersonate, interfere with, or misuse the platform or its systems.
 
 We may update these terms as the platform grows. Continued use after an update means you accept the revised terms. If you need help with an order, RSVP, membership, event listing, or content concern, contact support through the site.`,
     },
     privacy: {
         title: 'Privacy Policy',
-        body: `I Love Hip Hop JA collects information needed to operate a trusted cultural platform for events, memberships, merch, mixtapes, profiles, community submissions, and support. This policy explains what we collect, why we collect it, and how it is used.
+        body: `This Is Hip Hop Caribbean collects information needed to operate a trusted cultural platform for events, memberships, merch, mixtapes, profiles, community submissions, and support. This policy explains what we collect, why we collect it, and how it is used.
 
 We may collect information you provide directly, including your name, email address, phone number, membership details, RSVP details, event submissions, profile information, mixtape upload details, support messages, shipping information, and order-related information. We also collect basic technical and usage information such as pages visited, referral paths, session identifiers, device or browser details, and analytics events that help us understand platform performance.
 
@@ -36,7 +36,7 @@ Payment information is processed by Stripe. We do not store full card numbers on
 
 We do not sell personal information. We may share information when necessary to complete a transaction or request, operate the platform, protect users and partners, investigate abuse, comply with law, or enforce our terms.
 
-Some parts of the platform are public by nature. Approved event listings, creator profiles, gallery materials, and community content may be visible to visitors and may be promoted through I Love Hip Hop JA channels.
+Some parts of the platform are public by nature. Approved event listings, creator profiles, gallery materials, and community content may be visible to visitors and may be promoted through This Is Hip Hop Caribbean channels.
 
 We keep information for as long as needed for platform operations, support, accounting, security, legal compliance, and community records. You may contact support to request review, correction, or deletion of personal information where applicable, subject to records we must retain for legitimate operational or legal reasons.
 
@@ -66,6 +66,16 @@ const SupportSchema = z.object({
     phone: z.string().optional(),
     subject: z.string().min(3),
     message: z.string().min(10),
+});
+
+const AdminAccessRequestSchema = z.object({
+    name: z.string().min(2),
+    email: z.string().email(),
+    phone: z.string().optional(),
+    organization: z.string().optional(),
+    requestedRole: z.enum(['admin']).default('admin'),
+    requestedPermissions: z.array(z.enum(['events', 'rsvps', 'galleries', 'mixtapes', 'members', 'orders', 'content', 'analytics', 'settings'])).default([]),
+    reason: z.string().min(10),
 });
 
 const AnalyticsSchema = z.object({
@@ -333,7 +343,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             await Promise.all([
                 sendBrandedEmail({
                     to: data.email,
-                    subject: 'Support request received | I Love Hip Hop JA',
+                    subject: 'Support request received | This Is Hip Hop Caribbean',
                     preview: 'We received your message and will review it.',
                     from: emailSenders.ops,
                     eyebrow: 'Support',
@@ -358,6 +368,72 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(201).json({ success: true, id: request.id });
         } catch (error) {
             return res.status(500).json({ error: error instanceof Error ? error.message : 'Support request failed' });
+        }
+    }
+
+    if (req.method === 'POST' && resource === 'admin_access_request') {
+        const parseResult = AdminAccessRequestSchema.safeParse(req.body);
+        if (!parseResult.success) return res.status(400).json({ error: 'Invalid admin access request', details: parseResult.error.issues });
+
+        try {
+            const supabase = createServerClient();
+            const rateLimit = await enforceRateLimit(req, supabase, { bucket: 'admin_access_request', limit: 3, windowSeconds: 60 * 60 });
+            if (!rateLimit.allowed) return res.status(429).json({ error: 'Too many admin access requests. Try again later.' });
+
+            const data = parseResult.data;
+            const email = data.email.trim().toLowerCase();
+            const { data: member } = await supabase
+                .from('members')
+                .select('id')
+                .eq('email', email)
+                .maybeSingle();
+
+            const { data: request, error } = await supabase
+                .from('admin_access_requests')
+                .insert({
+                    name: data.name,
+                    email,
+                    phone: data.phone || null,
+                    organization: data.organization || null,
+                    requested_role: data.requestedRole,
+                    requested_permissions: data.requestedPermissions,
+                    reason: data.reason,
+                    member_id: member?.id || null,
+                    status: 'pending',
+                })
+                .select('id')
+                .single();
+            if (error) throw error;
+
+            await Promise.all([
+                sendBrandedEmail({
+                    to: email,
+                    subject: 'Admin access request received | This Is Hip Hop Caribbean',
+                    preview: 'Your admin access request has been received for review.',
+                    from: emailSenders.ops,
+                    eyebrow: 'Admin Access',
+                    title: 'Request received',
+                    intro: 'Thanks for requesting platform admin access. A superadmin will review your request and follow up after approval.',
+                    sections: [{ title: 'Request', rows: [['Reference', request.id], ['Name', data.name], ['Permissions', data.requestedPermissions.join(', ') || 'General admin'], ['Status', 'Pending review']] }],
+                    action: { label: 'Visit Platform', url: siteUrl('/') },
+                }),
+                sendBrandedEmail({
+                    to: adminEmails,
+                    subject: `Admin access request: ${data.name}`,
+                    preview: `${data.name} requested admin access.`,
+                    from: emailSenders.ops,
+                    eyebrow: 'Admin Access Alert',
+                    title: 'New admin request',
+                    intro: 'Someone requested admin access to the This Is Hip Hop Caribbean platform.',
+                    sections: [{ title: 'Request', rows: [['Reference', request.id], ['Name', data.name], ['Email', email], ['Phone', data.phone], ['Organization', data.organization], ['Permissions', data.requestedPermissions.join(', ') || 'General admin'], ['Reason', data.reason], ['Existing member', member?.id ? `Yes #${member.id}` : 'No']] }],
+                    action: { label: 'Review Admins', url: siteUrl('/admin') },
+                    replyTo: email,
+                }),
+            ]);
+
+            return res.status(201).json({ success: true, id: request.id });
+        } catch (error) {
+            return res.status(500).json({ error: error instanceof Error ? error.message : 'Admin access request failed' });
         }
     }
 
@@ -421,6 +497,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                     .from('events')
                     .select('id, title, theme, sub_theme, event_date, venue_name')
                     .or(`title.ilike.${searchTerm},theme.ilike.${searchTerm},sub_theme.ilike.${searchTerm},venue_name.ilike.${searchTerm}`)
+                    .order('event_date', { ascending: true })
                     .limit(10),
                 supabase
                     .from('articles')

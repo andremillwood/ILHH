@@ -50,12 +50,12 @@ export default function OrderStatusPage() {
             Store / Order Status
           </Link>
 
-          <section className="neon-border bg-black/80 p-8 md:p-12 mt-8">
+          <section className="mt-8 border-t-8 border-neon-red bg-[#e9e4da] p-8 text-black md:p-12">
             <div className="flex items-center gap-4 mb-8">
               <Package className="w-12 h-12 text-neon-red" />
               <div>
-                <h1 className="font-display text-5xl md:text-7xl text-white">ORDER STATUS</h1>
-                <p className="text-gray-400 font-heading">{order?.public_id || orderId}</p>
+                <h1 className="font-display text-5xl uppercase text-black md:text-7xl">ORDER STATUS</h1>
+                <p className="font-heading text-black/60">{order?.public_id || orderId}</p>
               </div>
             </div>
 
@@ -66,15 +66,15 @@ export default function OrderStatusPage() {
                 <div className="grid md:grid-cols-3 gap-4 mb-8">
                   <div className="border border-neon-red/30 p-4">
                     <p className="text-neon-red font-heading text-xs uppercase tracking-wider">Payment</p>
-                    <p className="text-white font-heading text-xl">{order.status_v2.replace(/_/g, " ")}</p>
+                    <p className="font-heading text-xl font-bold text-black">{order.status_v2.replace(/_/g, " ")}</p>
                   </div>
                   <div className="border border-neon-red/30 p-4">
                     <p className="text-neon-red font-heading text-xs uppercase tracking-wider">Fulfillment</p>
-                    <p className="text-white font-heading text-xl">{order.fulfillment_status.replace(/_/g, " ")}</p>
+                    <p className="font-heading text-xl font-bold text-black">{order.fulfillment_status.replace(/_/g, " ")}</p>
                   </div>
                   <div className="border border-neon-red/30 p-4">
                     <p className="text-neon-red font-heading text-xs uppercase tracking-wider">Total</p>
-                    <p className="text-white font-heading text-xl">{order.currency.toUpperCase()} {(order.total_cents / 100).toFixed(2)}</p>
+                    <p className="font-heading text-xl font-bold text-black">{order.currency.toUpperCase()} {(order.total_cents / 100).toFixed(2)}</p>
                   </div>
                 </div>
 
@@ -88,10 +88,10 @@ export default function OrderStatusPage() {
                 </div>
 
                 <div className="border border-neon-red/30 p-5 mb-8">
-                  <h2 className="font-display text-3xl text-white mb-4">Items</h2>
+                  <h2 className="mb-4 font-display text-3xl uppercase text-black">Items</h2>
                   <div className="space-y-3">
                     {order.merch_order_items?.map((item, index) => (
-                      <div key={index} className="flex justify-between gap-4 text-gray-300 font-heading">
+                      <div key={index} className="flex justify-between gap-4 font-heading text-black/70">
                         <span>{item.product_name} / {item.color} / {item.size}</span>
                         <span>x{item.quantity}</span>
                       </div>

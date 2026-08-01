@@ -59,7 +59,7 @@ export default function Mixtapes() {
     <div className="min-h-screen bg-black graffiti-texture">
       <Navigation />
 
-      <section className="relative min-h-[84vh] pt-32 pb-16 px-4 overflow-hidden flex items-center">
+      <section className="relative flex min-h-[78vh] items-center overflow-hidden border-b-8 border-neon-red px-4 pb-16 pt-32">
         <div className="absolute inset-0 opacity-20">
           <img
             src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/mixtape-hero.png"
@@ -70,18 +70,18 @@ export default function Mixtapes() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/80 to-black" />
         <div className="relative z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-[1fr_420px] gap-10 items-center">
           <div>
-            <p className="text-neon-red font-heading uppercase tracking-[0.35em] mb-4">Stream / Download / Upload</p>
-            <h1 className="font-display text-7xl md:text-9xl mb-6 neon-text">
-              MIXTAPE VAULT
+            <span className="press-label mb-5">Sound system archive</span>
+            <h1 className="mb-6 font-display text-7xl uppercase leading-[0.88] text-white md:text-9xl">
+              THE TAPE BOX
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 font-heading max-w-3xl mb-8">
+            <p className="mb-8 max-w-3xl border-l-4 border-neon-red pl-5 font-body text-lg leading-8 text-gray-300 md:text-xl">
               A native audio home for Caribbean hip hop mixes, DJ sets, event recordings, and member uploads.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="#mixes" className="px-8 py-4 neon-border bg-neon-red text-black hover:bg-black hover:text-neon-red transition font-heading text-xl uppercase tracking-wider text-center">
+              <a href="#mixes" className="press-button">
                 Stream Mixes
               </a>
-              <Link to="/mixtapes/upload" className="px-8 py-4 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition font-heading text-xl uppercase tracking-wider text-center">
+              <Link to="/mixtapes/upload" className="press-button-secondary">
                 Upload Mix
               </Link>
               <Link to="/playlists" className="px-8 py-4 border border-white/20 text-white hover:text-neon-red hover:border-neon-red transition font-heading text-xl uppercase tracking-wider text-center">
@@ -90,7 +90,7 @@ export default function Mixtapes() {
             </div>
           </div>
 
-          <div className="neon-border bg-black/80 p-8">
+          <div className="press-panel p-8">
             <Headphones className="w-20 h-20 text-neon-red mb-6" />
             <h2 className="font-display text-5xl text-white mb-4">ON-PLATFORM AUDIO</h2>
             <p className="text-gray-300 font-heading mb-6">
@@ -128,14 +128,14 @@ export default function Mixtapes() {
               </div>
             </div>
           ) : (
-            <div className="space-y-5">
+            <div className="border-t border-white/30">
               {mixtapes.map((mixtape, index) => (
-                <div key={mixtape.id} className="neon-border bg-black/80 p-5 grid md:grid-cols-[72px_1fr_auto] gap-5 items-center hover:neon-glow transition">
+                <div key={mixtape.id} className="grid items-center gap-5 border-b border-white/20 bg-black py-6 transition hover:bg-white/[0.04] md:grid-cols-[72px_1fr_auto]">
                   <button
                     type="button"
                     onClick={() => togglePlay(mixtape)}
                     disabled={!mixtape.audio_url}
-                    className="w-16 h-16 bg-neon-red text-black flex items-center justify-center disabled:opacity-40"
+                    className="flex h-16 w-16 items-center justify-center rounded-full bg-neon-red text-black transition hover:bg-white disabled:opacity-40"
                   >
                     {activeMixId === mixtape.id ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8" />}
                   </button>
@@ -145,7 +145,7 @@ export default function Mixtapes() {
                       {mixtape.genre && <span className="text-neon-red font-heading text-xs uppercase tracking-wider">{mixtape.genre}</span>}
                       {mixtape.status === "pending" && <span className="text-yellow-400 font-heading text-xs uppercase">Pending Review</span>}
                     </div>
-                    <Link to={`/mixtapes/${mixtape.slug || mixtape.id}`} className="font-display text-3xl text-white hover:text-neon-red transition">
+                    <Link to={`/mixtapes/${mixtape.slug || mixtape.id}`} className="font-display text-3xl uppercase text-white transition hover:text-neon-red md:text-4xl">
                       {mixtape.title}
                     </Link>
                     <p className="text-neon-red font-heading">DJ {mixtape.dj_name}</p>
@@ -178,7 +178,7 @@ export default function Mixtapes() {
       </section>
 
       {activeMix && activeMix.audio_url && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-neon-red bg-black/95 p-4">
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t-4 border-neon-red bg-black p-4">
           <div className="max-w-7xl mx-auto grid md:grid-cols-[1fr_520px] gap-4 items-center">
             <div>
               <p className="text-white font-heading">{activeMix.title}</p>

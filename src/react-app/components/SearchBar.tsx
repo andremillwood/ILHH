@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Search, X, Calendar, FileText, Music, Loader2, UserRound, Users } from 'lucide-react';
 
 interface SearchResult {
-    events: Array<{ id: number; title: string; theme: string; event_date: string }>;
+    events: Array<{ id: number; title: string; theme: string; sub_theme?: string | null; event_date: string; venue_name?: string | null }>;
     articles: Array<{ id: number; title: string; slug: string; excerpt: string }>;
     mixtapes: Array<{ id: number; title: string; slug?: string | null; dj_name: string }>;
     profiles: Array<{ id: number; display_name: string; slug: string; profile_type: string; tagline?: string | null; city?: string | null }>;
@@ -109,12 +109,12 @@ export default function SearchBar() {
                                             {results.events.map((event) => (
                                                 <Link
                                                     key={event.id}
-                                                    to={`/events`}
+                                                    to={`/events/${event.id}`}
                                                     onClick={() => setIsOpen(false)}
                                                     className="block p-2 hover:bg-neon-red/10 transition"
                                                 >
                                                     <p className="text-white font-heading">{event.title}</p>
-                                                    <p className="text-gray-400 text-sm">{event.theme}</p>
+                                                    <p className="text-gray-400 text-sm">{event.event_date} / {event.sub_theme || event.theme}</p>
                                                 </Link>
                                             ))}
                                         </div>

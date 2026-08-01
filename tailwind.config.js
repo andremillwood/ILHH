@@ -14,8 +14,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['Bebas Neue', 'Impact', 'sans-serif'],
-        heading: ['Oswald', 'sans-serif'],
+        display: ['Archivo Black', 'Impact', 'sans-serif'],
+        heading: ['Barlow Condensed', 'Arial Narrow', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         'glow-pulse': 'glow-pulse 3s ease-in-out infinite',

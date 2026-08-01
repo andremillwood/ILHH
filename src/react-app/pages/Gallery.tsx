@@ -29,17 +29,25 @@ interface Gallery {
 export default function Gallery() {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   const [selectedImage, setSelectedImage] = useState<{ url: string; partner: string } | null>(null);
 
   useEffect(() => {
     fetch("/api/galleries")
-      .then((res) => res.json())
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data?.error || "Failed to load galleries");
+        return data;
+      })
       .then((data) => {
-        setGalleries(data);
+        setGalleries(Array.isArray(data) ? data : []);
+        setErrorMessage("");
         setLoading(false);
       })
       .catch((err) => {
         console.error(err);
+        setGalleries([]);
+        setErrorMessage("Gallery images are being refreshed. Please check back shortly.");
         setLoading(false);
       });
   }, []);
@@ -50,19 +58,27 @@ export default function Gallery() {
 
       <div className="pt-32 pb-20 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <Camera className="w-16 h-16 text-neon-red mx-auto mb-6" />
-            <h1 className="font-display text-7xl md:text-9xl mb-6 neon-text">
-              PHOTO GALLERY
+          <div className="mb-16 border-b-8 border-neon-red pb-8">
+            <span className="press-label mb-5">Kingston contact sheets</span>
+            <h1 className="font-display text-7xl uppercase leading-[0.88] text-white md:text-9xl">
+              SEEN IN THE DANCE
             </h1>
-            <p className="text-xl text-gray-400 font-heading">
-              Captured moments from the scene. Our photographer partners bring the energy to life.
+            <p className="mt-6 max-w-3xl font-body text-lg leading-8 text-gray-300">
+              Documentary frames from the room: selectors, dancers, crews and the people carrying Kingston nightlife.
             </p>
           </div>
 
           {loading ? (
             <div className="text-center text-white font-heading text-xl">
               Loading galleries...
+            </div>
+          ) : errorMessage ? (
+            <div className="text-center">
+              <div className="neon-border bg-black/80 backdrop-blur-md p-12 inline-block">
+                <p className="text-gray-400 font-heading text-lg">
+                  {errorMessage}
+                </p>
+              </div>
             </div>
           ) : galleries.length === 0 ? (
             <div className="text-center">
@@ -76,14 +92,14 @@ export default function Gallery() {
               </div>
             </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid gap-10 md:grid-cols-2">
               {galleries.map((gallery) => (
                 <div
                   key={gallery.id}
-                  className="group neon-border bg-black/80 backdrop-blur-md overflow-hidden hover:neon-glow transition"
+                  className="group overflow-hidden border-t border-white/30 bg-black pt-4 transition"
                 >
                   <div 
-                    className="aspect-video relative overflow-hidden bg-gradient-to-br from-neon-red/20 to-black cursor-pointer"
+                    className="relative aspect-[4/3] cursor-pointer overflow-hidden bg-black"
                     onClick={() => gallery.featured_image_url && setSelectedImage({ url: gallery.featured_image_url, partner: gallery.partner_name })}
                   >
                     {gallery.featured_image_url ? (
@@ -104,9 +120,9 @@ export default function Gallery() {
                     )}
                   </div>
 
-                  <div className="p-6">
+                  <div className="px-1 py-5">
                     <div className="flex items-center justify-between mb-3">
-                                <h3 className="font-heading text-xl text-white">
+                                <h3 className="font-display text-3xl uppercase text-white">
                         {gallery.title || gallery.partner_name}
                       </h3>
                       {gallery.partner_instagram && (
@@ -153,7 +169,7 @@ export default function Gallery() {
                         href={gallery.gallery_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center w-full px-4 py-2 neon-border bg-black text-neon-red hover:bg-neon-red hover:text-black transition text-center font-heading uppercase tracking-wider"
+                        className="press-button-secondary w-full"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <ExternalLink className="w-4 h-4 mr-2" />

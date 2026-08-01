@@ -17,6 +17,7 @@ import MixtapeDetailPage from "@/react-app/pages/MixtapeDetail";
 import MixtapeUploadPage from "@/react-app/pages/MixtapeUpload";
 import GalleryPage from "@/react-app/pages/Gallery";
 import HappyHourPage from "@/react-app/pages/HappyHour";
+import WeeklyLineupPage from "@/react-app/pages/WeeklyLineup";
 import MerchPage from "@/react-app/pages/Merch";
 import MerchCategoryPage from "@/react-app/pages/MerchCategory";
 import MerchProductPage from "@/react-app/pages/MerchProduct";
@@ -24,10 +25,13 @@ import ProfilesPage from "@/react-app/pages/Profiles";
 import ProfileDetailPage from "@/react-app/pages/ProfileDetail";
 import SubmitEventPage from "@/react-app/pages/SubmitEvent";
 import AdminPage from "@/react-app/pages/Admin";
+import AdminRequestPage from "@/react-app/pages/AdminRequest";
 import OrderStatusPage from "@/react-app/pages/OrderStatus";
 import PolicyPage from "@/react-app/pages/Policy";
 import SupportPage from "@/react-app/pages/Support";
 import SubmitArticlePage from "@/react-app/pages/SubmitArticle";
+import PeoplesChoiceDjPage from "@/react-app/pages/PeoplesChoiceDj";
+
 
 export default function App() {
   return (
@@ -57,6 +61,10 @@ export default function App() {
             <Route path="/music/:mixSlug" element={<MixtapeDetailPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/happy-hour" element={<HappyHourPage />} />
+            <Route path="/peoples-choice-dj" element={<PeoplesChoiceDjPage />} />
+            <Route path="/dj-vote" element={<PeoplesChoiceDjPage />} />
+            <Route path="/dulce-dj" element={<PeoplesChoiceDjPage />} />
+            <Route path="/weekly-lineup" element={<WeeklyLineupPage />} />
             <Route path="/merch" element={<MerchPage />} />
             <Route path="/merch/category/:categoryId" element={<MerchCategoryPage />} />
             <Route path="/merch/product/:productId" element={<MerchProductPage />} />
@@ -72,6 +80,8 @@ export default function App() {
             <Route path="/policy/:policySlug" element={<PolicyPage />} />
             <Route path="/support" element={<SupportPage />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin-request" element={<AdminRequestPage />} />
+            <Route path="/admin/request" element={<AdminRequestPage />} />
           </Routes>
         </Router>
       </CartProvider>

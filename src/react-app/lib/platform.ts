@@ -29,8 +29,8 @@ export const isDesignatedRsvpEvent = (eventOrTitle: string | Pick<EventWithDJs, 
   const eventDate = new Date(year, month - 1, day);
   const isThursday = eventDate.getDay() === 4;
   const isDulce = haystack.includes("dulce");
-  const isIlhhSeries = haystack.includes("i luv hip hop") || haystack.includes("global bass") || haystack.includes("breeze") || haystack.includes("hip-so") || haystack.includes("love songs");
-  const explicitlyNamed = haystack.includes("shutdown") || haystack.includes("rave mode") || haystack.includes("own the night");
+  const isIlhhSeries = haystack.includes("i luv hip hop") || haystack.includes("global bass") || haystack.includes("breeze") || haystack.includes("hip-so") || haystack.includes("love songs") || haystack.includes("road to the cup") || haystack.includes("summer") || haystack.includes("hotter than");
+  const explicitlyNamed = haystack.includes("shutdown") || haystack.includes("rave mode") || haystack.includes("own the night") || haystack.includes("summer champions") || haystack.includes("x-files");
 
   return explicitlyNamed || (isThursday && isDulce && isIlhhSeries);
 };

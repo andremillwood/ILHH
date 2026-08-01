@@ -39,20 +39,25 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-neon-red/30">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b-4 border-neon-red bg-black/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <Link to="/" className="flex items-center">
-            <img
-              src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png"
-              alt="This Is Hip Hop Caribbean"
-              className="h-12 w-auto"
-            />
-            <span className="ml-3 hidden xl:block font-heading text-white uppercase tracking-wider text-xs leading-tight">
-              This Is Hip Hop<br />
-              Caribbean
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center">
+              <img
+                src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png"
+                alt="This Is Hip Hop Caribbean"
+                className="h-12 w-auto"
+              />
+            </Link>
+            <span className="ml-3 hidden xl:block border-l border-white/30 pl-3 font-heading text-white uppercase tracking-[0.16em] text-xs leading-tight">
+              <span className="text-neon-red">This Is Hip Hop Caribbean</span><br />
+              Kingston, Jamaica<br />
+              <Link to="/weekly-lineup" className="hover:text-neon-red transition">
+                Every Thursday
+              </Link>
             </span>
-          </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-5">
@@ -80,6 +85,10 @@ export default function Navigation() {
             </Link>
             <Link to="/community" className={linkClass("/community")}>
               Community
+            </Link>
+            <Link to="/peoples-choice-dj" className={`relative ${linkClass("/peoples-choice-dj")}`}>
+              DJ Vote
+              <span className="ml-1 text-[10px] bg-amber-500 text-black px-1.5 py-0.5 rounded font-black">NEW</span>
             </Link>
             <Link to={user ? "/home" : "/membership"} className={linkClass(user ? "/home" : "/membership")}>
               {user ? "Home" : "Membership"}
@@ -293,6 +302,7 @@ function MegaMenu() {
       icon: CalendarDays,
       links: [
         { to: "/events", label: "Event Calendar", text: "I Luv Hip Hop Weekly and promoted hip hop events." },
+        { to: "/peoples-choice-dj", label: "DJ Vote @ Dulce", text: "Nominate & vote for People's Choice DJ featured every Last Thursday." },
         { to: "/happy-hour", label: "Happy Hour", text: "Member coupons and early-night perks." },
         { to: "/submit-event", label: "Submit Event", text: "Promoter and DJ event intake." },
       ],

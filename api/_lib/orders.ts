@@ -219,7 +219,7 @@ export async function submitOrderToPrintful(supabase: SupabaseClient, order: any
     if (updated.customer_email) {
         await sendBrandedEmail({
             to: updated.customer_email,
-            subject: 'Order confirmed | I Love Hip Hop JA',
+            subject: 'Order confirmed | This Is Hip Hop Caribbean',
             preview: 'Your merch order is confirmed and moving to fulfillment.',
             from: emailSenders.orders,
             eyebrow: 'Order Confirmed',

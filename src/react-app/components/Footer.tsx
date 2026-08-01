@@ -3,17 +3,17 @@ import SocialCtas from "@/react-app/components/SocialCtas";
 
 export default function Footer() {
   return (
-    <footer className="py-12 px-4 border-t border-neon-red/30 bg-black">
+    <footer className="border-t-8 border-neon-red bg-black px-4 py-12">
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-[1fr_1fr_1fr] gap-8 mb-8">
+        <div className="mb-8 grid gap-8 md:grid-cols-[1.2fr_1fr_1fr]">
           <div>
             <img 
               src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png" 
-              alt="I Luv Hip Hop" 
+              alt="I Luv Hip Hop, the signature event and merchandise brand of This Is Hip Hop Caribbean"
               className="h-16 w-auto mb-4"
             />
-            <p className="text-gray-400 font-heading">
-              The Original Thursday Night Hip Hop Experience
+            <p className="max-w-sm font-heading text-2xl font-bold uppercase leading-tight text-white">
+              Hip hop culture, Kingston street energy, every Thursday night.
             </p>
           </div>
           <div>
@@ -88,7 +88,7 @@ export default function Footer() {
             <Link to="/policy/event-submissions" className="text-gray-500 hover:text-neon-red">Event Terms</Link>
           </div>
           <p className="text-sm text-gray-500">
-            © 2025 I Luv Hip Hop. All rights reserved.
+            © 2026 This Is Hip Hop Caribbean. Kingston, Jamaica.
           </p>
         </div>
       </div>

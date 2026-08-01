@@ -40,6 +40,21 @@ PRINTFUL_STORE_ID=...
 CRON_SECRET=...
 ```
 
+### Cloudflare R2 Uploads
+
+DJ mixes, cover artwork, and native event gallery photos upload directly from the browser to R2 using short-lived signed URLs.
+
+Required server env vars:
+```
+R2_ACCOUNT_ID=...
+R2_ACCESS_KEY_ID=...
+R2_SECRET_ACCESS_KEY=...
+R2_BUCKET_NAME=ilhh-media
+R2_PUBLIC_BASE_URL=https://media.your-domain.com
+```
+
+`R2_PUBLIC_BASE_URL` should be the bucket's public custom domain (recommended) or its `r2.dev` URL. In Cloudflare R2, add a bucket CORS policy allowing `PUT` from the production site and local development origin, with the `Content-Type` header. The API accepts authenticated audio uploads up to 750 MB, artwork up to 15 MB, and admin gallery images up to 30 MB each.
+
 Printful product sync:
 
 - Vercel runs `/api/admin` daily at 09:00 UTC with `Authorization: Bearer $CRON_SECRET`.
@@ -51,11 +66,12 @@ Printful product sync:
 Required transactional email env vars:
 ```
 RESEND_API_KEY=re_...
-RESEND_FROM_EMAIL=I Love Hip Hop JA <noreply@ilovehiphopja.com>
-RESEND_ORDERS_FROM_EMAIL=I Love Hip Hop JA Orders <orders@ilovehiphopja.com>
-RESEND_EVENTS_FROM_EMAIL=I Love Hip Hop JA Events <events@ilovehiphopja.com>
-RESEND_MEMBERS_FROM_EMAIL=I Love Hip Hop JA Members <members@ilovehiphopja.com>
-RESEND_OPS_FROM_EMAIL=I Love Hip Hop JA Ops <ops@ilovehiphopja.com>
+RESEND_FROM_EMAIL=This Is Hip Hop Caribbean <noreply@ilovehiphopja.com>
+RESEND_ORDERS_FROM_EMAIL=This Is Hip Hop Caribbean Orders <orders@ilovehiphopja.com>
+RESEND_EVENTS_FROM_EMAIL=This Is Hip Hop Caribbean Events <events@ilovehiphopja.com>
+RESEND_MEMBERS_FROM_EMAIL=This Is Hip Hop Caribbean Members <members@ilovehiphopja.com>
+RESEND_OPS_FROM_EMAIL=This Is Hip Hop Caribbean Ops <ops@ilovehiphopja.com>
+EMAIL_LOGO_URL=https://your-public-logo-url.example/logo.png
 RESEND_REPLY_TO=admin@ilovehiphopja.com
 ADMIN_NOTIFY_EMAILS=admin@ilovehiphopja.com
 ```

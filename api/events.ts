@@ -75,7 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             await Promise.all([
                 sendBrandedEmail({
                     to: submission.promoter_email,
-                    subject: 'Event submission received | I Love Hip Hop JA',
+                    subject: 'Event submission received | This Is Hip Hop Caribbean Events',
                     preview: 'Your event submission has been received for review.',
                     from: emailSenders.events,
                     eyebrow: 'Event Submission',
