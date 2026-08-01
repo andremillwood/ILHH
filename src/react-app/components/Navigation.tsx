@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { BarChart3, Bookmark, CalendarDays, ChevronDown, FileText, LayoutDashboard, Menu, Mic2, Minus, Music, PenLine, Plus, Search, ShoppingBag, Tag, Trash2, UserCircle, Users, X } from "lucide-react";
+import { BarChart3, Bookmark, CalendarDays, ChevronDown, FileText, LayoutDashboard, Menu, Mic2, Minus, Music, PenLine, Plus, Search, ShoppingBag, Sparkles, Tag, Trash2, UserCircle, Users, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/AuthContext";
 import SearchBar from "@/react-app/components/SearchBar";
@@ -39,31 +39,55 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b-4 border-neon-red bg-black/95">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <img
-                src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png"
-                alt="This Is Hip Hop Caribbean"
-                className="h-12 w-auto"
-              />
-            </Link>
-            <span className="ml-3 hidden xl:block border-l border-white/30 pl-3 font-heading text-white uppercase tracking-[0.16em] text-xs leading-tight">
-              <span className="text-neon-red">This Is Hip Hop Caribbean</span><br />
-              Kingston, Jamaica<br />
-              <Link to="/weekly-lineup" className="hover:text-neon-red transition">
-                Every Thursday
-              </Link>
-            </span>
-          </div>
+    <div className="fixed top-0 left-0 right-0 z-50">
+      {/* Site-wide Top Announcement Bar for Independence Event */}
+      <div className="bg-gradient-to-r from-amber-500 via-emerald-600 to-zinc-950 text-black py-1.5 px-4 text-center font-heading text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-b border-amber-400/40">
+        <span className="bg-black text-amber-400 font-black px-2 py-0.5 rounded text-[10px] tracking-widest">
+          AUG 6 SPECIAL
+        </span>
+        <span className="font-bold text-white">
+          Independence Day: Jay-Z Black Album Tribute
+        </span>
+        <span className="hidden md:inline text-amber-200 text-[11px]">
+          • FREE w/ RSVP in Full Black • $500 w/ RSVP • $1,000 Gate
+        </span>
+        <Link
+          to="/independence"
+          className="ml-2 px-2.5 py-0.5 bg-black text-amber-400 font-black hover:bg-amber-400 hover:text-black transition rounded text-[11px]"
+        >
+          RSVP NOW &rarr;
+        </Link>
+      </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-5">
-            <Link to="/" className={linkClass("/")}>
-              Home
-            </Link>
+      <nav className="border-b-4 border-neon-red bg-black/95">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center">
+                <img
+                  src="https://mocha-cdn.com/019a95be-5809-78f9-888f-432287444de7/ilhh_logo1.png"
+                  alt="This Is Hip Hop Caribbean"
+                  className="h-12 w-auto"
+                />
+              </Link>
+              <span className="ml-3 hidden xl:block border-l border-white/30 pl-3 font-heading text-white uppercase tracking-[0.16em] text-xs leading-tight">
+                <span className="text-neon-red">This Is Hip Hop Caribbean</span><br />
+                Kingston, Jamaica<br />
+                <Link to="/weekly-lineup" className="hover:text-neon-red transition">
+                  Every Thursday
+                </Link>
+              </span>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-5">
+              <Link to="/independence" className="relative text-amber-400 hover:text-amber-300 transition font-heading uppercase tracking-wider text-sm font-bold">
+                Aug 6th
+                <span className="ml-1 text-[9px] bg-emerald-500 text-black px-1 py-0.5 rounded font-black">SPECIAL</span>
+              </Link>
+              <Link to="/" className={linkClass("/")}>
+                Home
+              </Link>
             <div
               className="relative"
               onMouseEnter={() => setIsMegaOpen(true)}
@@ -272,10 +296,12 @@ export default function Navigation() {
         </div>
       )}
     </nav>
+    </div>
   );
 }
 
 const mobileMenuLinks = [
+  { to: "/independence", label: "Aug 6th Special", icon: Sparkles },
   { to: "/home", label: "Home", icon: LayoutDashboard },
   { to: "/events", label: "Events", icon: CalendarDays },
   { to: "/happy-hour", label: "Happy Hour", icon: Tag },

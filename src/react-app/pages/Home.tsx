@@ -102,6 +102,17 @@ export default function Home() {
   const latestArticles = articles.slice(0, 4);
   const heroSlides = [
     {
+      key: "independence-special",
+      eyebrow: "Jamaica Independence Special • Thursday Aug 6",
+      title: "DIRT OFF YOUR SHOULDERS",
+      body: "Celebrating Jay-Z The Black Album (20 Years of Greatness). FREE entry with RSVP in Full Black, $500 w/ RSVP, or $1,000 at the gate.",
+      to: "/independence",
+      cta: "RSVP FREE IN FULL BLACK",
+      image: "/flyers/aug-week1-independence.jpg",
+      meta: "Aug 6, 2026 / Dulce Lounge, Kingston",
+      icon: Sparkles,
+    },
+    {
       key: "merch",
       eyebrow: "Official Merch",
       title: "WEAR THE MOVEMENT",

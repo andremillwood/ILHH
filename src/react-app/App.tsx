@@ -31,7 +31,7 @@ import PolicyPage from "@/react-app/pages/Policy";
 import SupportPage from "@/react-app/pages/Support";
 import SubmitArticlePage from "@/react-app/pages/SubmitArticle";
 import PeoplesChoiceDjPage from "@/react-app/pages/PeoplesChoiceDj";
-
+import IndependencePage from "@/react-app/pages/Independence";
 
 export default function App() {
   return (
@@ -41,6 +41,9 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            <Route path="/independence" element={<IndependencePage />} />
+            <Route path="/aug6" element={<IndependencePage />} />
+            <Route path="/dirt-off-your-shoulders" element={<IndependencePage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/events/:eventId" element={<EventDetailPage />} />
             <Route path="/membership" element={<MembershipPage />} />

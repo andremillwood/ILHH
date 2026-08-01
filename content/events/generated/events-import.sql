@@ -242,7 +242,7 @@ DO $$
 DECLARE
   v_event_id INTEGER;
 BEGIN
-  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (25, 'Main Character Energy', 'I Luv Hip Hop Thursday edition featuring Main Character Energy theme with guest DJ ZJ West.', '2026-07-02', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Main Character Energy', 'Main Character Energy', NULL, TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
+  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (25, 'Main Character Energy', 'I Luv Hip Hop Thursday edition featuring Main Character Energy theme with guest DJ ZJ West.', '2026-07-02', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Main Character Energy', 'Main Character Energy', '/flyers/july-week1-main-character-energy.jpg', TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
   DELETE FROM event_djs WHERE event_id = v_event_id;
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'ZJ West', 'Guest DJ', FALSE);
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Andre Millwood', 'Resident DJ', TRUE);
@@ -253,10 +253,11 @@ DO $$
 DECLARE
   v_event_id INTEGER;
 BEGIN
-  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (26, 'New Blood', 'I Luv Hip Hop Thursday edition featuring New Blood theme with DJs Blaxxtar and DJ X.', '2026-07-09', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'New Blood', 'New Blood', NULL, TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
+  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (26, 'New Blood', 'I Luv Hip Hop Thursday edition featuring New Blood theme with DJ Blaxxtar, Alexander Clennon, and resident DJ Vybz Ovadose.', '2026-07-09', '8:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'New Blood', 'New Blood', '/flyers/july-week2-new-blood.jpg', TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
   DELETE FROM event_djs WHERE event_id = v_event_id;
-  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Blaxxtar', 'Guest DJ', FALSE);
-  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ X', 'Guest DJ', FALSE);
+  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Blaxxtar', 'Guest DJ', FALSE);
+  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Alexander Clennon', 'Guest DJ', FALSE);
+  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Vybz Ovadose', 'Resident DJ', TRUE);
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Andre Millwood', 'Resident DJ', TRUE);
 END $$;
 
@@ -265,9 +266,10 @@ DO $$
 DECLARE
   v_event_id INTEGER;
 BEGIN
-  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (27, 'Player One', 'I Luv Hip Hop Thursday edition featuring Player One theme with DJ Mario.', '2026-07-16', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Player One', 'Player One', NULL, TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
+  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (27, 'Player One', 'I Luv Hip Hop Thursday edition featuring Player One theme with Guest DJ Mario and resident DJ Steamaz.', '2026-07-16', '8:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Player One', 'Player One', '/flyers/july-week3-player-one.jpg', TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
   DELETE FROM event_djs WHERE event_id = v_event_id;
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Mario', 'Guest DJ', FALSE);
+  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Steamaz', 'Resident DJ', TRUE);
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Andre Millwood', 'Resident DJ', TRUE);
 END $$;
 
@@ -276,10 +278,10 @@ DO $$
 DECLARE
   v_event_id INTEGER;
 BEGIN
-  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (28, 'Night Shift', 'I Luv Hip Hop Thursday edition featuring Night Shift theme with Johnny Kool and resident DJ Steamaz.', '2026-07-23', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Night Shift', 'Night Shift', NULL, TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
+  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (28, 'Night Shift', 'I Luv Hip Hop Thursday edition featuring Night Shift theme with Guest Supervisor DJ Johnny Kool and resident DJ Steamaz.', '2026-07-23', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Night Shift', 'Night Shift', '/flyers/july-week4-nightshift.jpg', TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
   DELETE FROM event_djs WHERE event_id = v_event_id;
-  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Johnny Kool', 'ZIP FM', FALSE);
-  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Steamaz', 'Resident DJ', TRUE);
+  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Johnny Kool', 'Guest Supervisor', FALSE);
+  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Steamaz', 'Resident Operator', TRUE);
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Andre Millwood', 'Resident DJ', TRUE);
 END $$;
 
@@ -288,20 +290,22 @@ DO $$
 DECLARE
   v_event_id INTEGER;
 BEGIN
-  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (29, 'Therapy', 'I Luv Hip Hop Thursday edition featuring Therapy theme with DJ Vinchi and resident DJ Steamaz.', '2026-07-30', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Therapy', 'Therapy', NULL, TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
+  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (29, 'Therapy', 'I Luv Hip Hop Thursday edition featuring Therapy theme with DJ Vinchi and resident DJ Steamaz.', '2026-07-30', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Therapy', 'Therapy', '/flyers/july-week5-therapy.jpg', TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
   DELETE FROM event_djs WHERE event_id = v_event_id;
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Vinchi', 'Guest DJ', FALSE);
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Steamaz', 'Resident DJ', TRUE);
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Andre Millwood', 'Resident DJ', TRUE);
 END $$;
 
--- Row 28: ILHH Weekly
+-- Row 28: Independence Day Celebration
 DO $$
 DECLARE
   v_event_id INTEGER;
 BEGIN
-  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (30, 'ILHH Weekly', 'Weekly I Luv Hip Hop Thursday placeholder. Theme, artwork, guest DJs, galleries and mix links can be filled in from admin as the programme locks.', '2026-08-06', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'I Luv Hip Hop Thursdays', 'Details TBA', NULL, TRUE, FALSE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
+  INSERT INTO events (id, title, description, event_date, event_time, venue_name, venue_address, theme, sub_theme, flyer_url, is_featured, is_special, updated_at) VALUES (30, 'Independence Day Celebration', 'Jamaica Independence Day Special celebrating Jay-Z The Black Album (20 Years of Greatness). Cover charge: $1,000 General / At The Gate. $500 with RSVP. FREE in full black with RSVP. Music by Main DJ Troy Finzi and resident DJ Steamaz.', '2026-08-06', '9:00 PM - Late', 'Dulce Lounge', '22 Barbican Road, Kingston, Jamaica', 'Celebrating Jay-Z The Black Album', 'Dirt Off Your Shoulders', '/flyers/aug-week1-independence.jpg', TRUE, TRUE, NOW()) ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, event_date = EXCLUDED.event_date, event_time = EXCLUDED.event_time, venue_name = EXCLUDED.venue_name, venue_address = EXCLUDED.venue_address, theme = EXCLUDED.theme, sub_theme = EXCLUDED.sub_theme, flyer_url = EXCLUDED.flyer_url, is_featured = EXCLUDED.is_featured, is_special = EXCLUDED.is_special, updated_at = NOW() RETURNING id INTO v_event_id;
   DELETE FROM event_djs WHERE event_id = v_event_id;
+  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Troy Finzi', 'Main DJ', FALSE);
+  INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'DJ Steamaz', 'Resident DJ', TRUE);
   INSERT INTO event_djs (event_id, dj_name, dj_description, is_resident) VALUES (v_event_id, 'Andre Millwood', 'Resident DJ', TRUE);
 END $$;
 

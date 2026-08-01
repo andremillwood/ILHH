@@ -115,6 +115,35 @@ export default function EventDetail() {
               </div>
             )}
 
+            {(event.id === 30 || event.title.toLowerCase().includes("independence") || event.theme?.toLowerCase().includes("black album")) && (
+              <div className="mb-8 border-2 border-amber-500 bg-gradient-to-r from-amber-950/60 via-black to-emerald-950/60 p-6 rounded-lg shadow-xl">
+                <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                  <span className="font-display text-xl text-amber-400 uppercase">JAMAICA INDEPENDENCE SPECIAL ADMISSION</span>
+                  <span className="bg-emerald-500 text-black font-black text-xs px-2.5 py-0.5 rounded uppercase">Aug 6 Special</span>
+                </div>
+                <div className="grid sm:grid-cols-3 gap-4 text-center my-4">
+                  <div className="p-3 bg-black/80 border border-emerald-500/50 rounded">
+                    <span className="block font-display text-2xl text-emerald-400">FREE</span>
+                    <span className="text-[11px] font-heading text-gray-300 uppercase">Full Black + RSVP</span>
+                  </div>
+                  <div className="p-3 bg-black/80 border border-amber-500/50 rounded">
+                    <span className="block font-display text-2xl text-amber-400">$500</span>
+                    <span className="text-[11px] font-heading text-gray-300 uppercase">RSVP (Standard)</span>
+                  </div>
+                  <div className="p-3 bg-black/80 border border-white/20 rounded">
+                    <span className="block font-display text-2xl text-white">$1,000</span>
+                    <span className="text-[11px] font-heading text-gray-400 uppercase">At The Gate</span>
+                  </div>
+                </div>
+                <Link
+                  to="/independence"
+                  className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-black font-display text-base uppercase tracking-wider block text-center transition mt-2"
+                >
+                  GO TO SPECIAL INDEPENDENCE LANDING PAGE &rarr;
+                </Link>
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-4 mb-8">
               <div className="border border-neon-red/40 bg-black/70 p-5">
                 <Calendar className="w-7 h-7 text-neon-red mb-3" />
