@@ -32,7 +32,7 @@ const brand = {
     muted: '#b8b8b8',
 };
 
-export const adminEmails = (process.env.ADMIN_NOTIFY_EMAILS || 'andremillwood@gmail.com')
+export const adminEmails = (process.env.ADMIN_NOTIFY_EMAILS || 'andremillwood@gmail.com,frankgriz@gmail.com')
     .split(',')
     .map((email) => email.trim())
     .filter(Boolean);

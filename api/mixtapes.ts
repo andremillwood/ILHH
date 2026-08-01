@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
 import { createR2Upload } from './_lib/r2.js';
 
-const ADMIN_EMAILS = ['andremillwood@gmail.com', 'admin@ilovehiphopja.com'];
+const ADMIN_EMAILS = ['andremillwood@gmail.com', 'frankgriz@gmail.com', 'admin@ilovehiphopja.com'];
 
 const MixtapeCreateSchema = z.object({
     title: z.string().min(2),

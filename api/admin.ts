@@ -5,13 +5,13 @@ import { emailSenders, sendBrandedEmail, siteUrl } from './_lib/email.js';
 import { syncPrintfulOrderStatus, logOrderEvent } from './_lib/orders.js';
 import { syncPrintfulProducts } from './_lib/printful-sync.js';
 
-const ADMIN_EMAILS = (process.env.ADMIN_NOTIFY_EMAILS || 'andremillwood@gmail.com,admin@ilovehiphopja.com')
+const ADMIN_EMAILS = (process.env.ADMIN_NOTIFY_EMAILS || 'andremillwood@gmail.com,frankgriz@gmail.com,admin@ilovehiphopja.com')
     .split(',')
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
 
 const ADMIN_PERMISSION_KEYS = ['events', 'rsvps', 'galleries', 'mixtapes', 'members', 'orders', 'content', 'analytics', 'settings'] as const;
-const SUPERADMIN_EMAILS = ['andremillwood@gmail.com'];
+const SUPERADMIN_EMAILS = ['andremillwood@gmail.com', 'frankgriz@gmail.com'];
 
 const EventSchema = z.object({
     title: z.string().min(1),
