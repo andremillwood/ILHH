@@ -71,41 +71,65 @@ export default function WeeklyLineup() {
             <div className="space-y-8">
               {weeklyEvents.map((event, index) => {
                 const eventDate = eventDateValue(event);
+                const isIndependence = event.id === 30 || event.event_date === "2026-08-06";
+                const eventLink = isIndependence ? "/independence" : `/events/${event.id}`;
+                const eventFlyer = event.flyer_url || (isIndependence ? "/flyers/aug-week1-independence.jpg" : "/brand/ilhh-logo.png");
 
                 return (
-                  <article key={event.id} className="grid gap-6 border-t border-white/25 bg-black pt-6 md:grid-cols-[180px_1fr_180px]">
-                    <Link to={`/events/${event.id}`} className="relative block aspect-[2/3] overflow-hidden bg-white/5">
-                      <img src={event.flyer_url || "/brand/ilhh-logo.png"} alt={`${event.title} flyer`} className="h-full w-full object-cover transition duration-500 hover:scale-[1.03]" />
-                      {index === 0 && <span className="absolute left-0 top-5 bg-neon-red px-4 py-2 font-heading text-xs font-bold uppercase tracking-widest text-black">Next Up</span>}
+                  <article
+                    key={event.id}
+                    className={`grid gap-6 bg-black p-6 md:grid-cols-[200px_1fr_180px] transition ${
+                      isIndependence
+                        ? "border-t-8 border-amber-500 bg-gradient-to-r from-amber-950/40 via-black to-emerald-950/40 shadow-xl"
+                        : "border-t border-white/25"
+                    }`}
+                  >
+                    <Link to={eventLink} className="relative block aspect-[4/5] overflow-hidden bg-white/5 rounded">
+                      <img src={eventFlyer} alt={`${event.title} flyer`} className="h-full w-full object-cover transition duration-500 hover:scale-[1.03]" />
+                      {isIndependence ? (
+                        <span className="absolute left-0 top-3 bg-amber-400 font-black text-black px-3 py-1 font-heading text-xs uppercase tracking-widest">
+                          🇯🇲 INDEPENDENCE SPECIAL
+                        </span>
+                      ) : index === 0 ? (
+                        <span className="absolute left-0 top-3 bg-neon-red px-3 py-1 font-heading text-xs font-bold uppercase tracking-widest text-black">
+                          Next Up
+                        </span>
+                      ) : null}
                     </Link>
 
                     <div>
-                      <p className="mb-3 inline-flex items-center border border-neon-red/50 px-3 py-1 font-heading text-xs uppercase tracking-wider text-neon-red">
+                      <p className={`mb-3 inline-flex items-center px-3 py-1 font-heading text-xs uppercase tracking-wider ${
+                        isIndependence ? "bg-emerald-500/20 border border-emerald-400 text-emerald-300" : "border border-neon-red/50 text-neon-red"
+                      }`}>
                         <Ticket className="mr-2 h-3 w-3" />
-                        RSVP perks and table bookings
+                        {isIndependence ? "FREE Entry in Full Black w/ RSVP • $500 RSVP • $1,000 Gate" : "RSVP perks and table bookings"}
                       </p>
                       <h2 className="font-display text-4xl uppercase leading-none text-white md:text-6xl">
-                        <Link to={`/events/${event.id}`} className="transition hover:text-neon-red">{event.title}</Link>
+                        <Link to={eventLink} className="transition hover:text-amber-400">{event.title}</Link>
                       </h2>
-                      {event.sub_theme && <p className="mt-2 font-heading text-2xl text-neon-red">{event.sub_theme}</p>}
+                      {event.sub_theme && (
+                        <p className={`mt-2 font-heading text-2xl ${isIndependence ? "text-amber-400" : "text-neon-red"}`}>
+                          {event.sub_theme}
+                        </p>
+                      )}
                       <div className="mt-5 grid gap-3 text-white sm:grid-cols-2">
                         <p className="flex items-center font-heading">
-                          <Calendar className="mr-3 h-5 w-5 text-neon-red" />
+                          <Calendar className={`mr-3 h-5 w-5 ${isIndependence ? "text-amber-400" : "text-neon-red"}`} />
                           {eventDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
                         </p>
                         <p className="flex items-center font-heading">
-                          <MapPin className="mr-3 h-5 w-5 text-neon-red" />
+                          <MapPin className={`mr-3 h-5 w-5 ${isIndependence ? "text-amber-400" : "text-neon-red"}`} />
                           {event.venue_name || "Dulce Lounge"}
                         </p>
                       </div>
                       <div className="mt-6">
-                        <h3 className="mb-3 flex items-center font-heading text-lg text-neon-red">
+                        <h3 className={`mb-3 flex items-center font-heading text-lg ${isIndependence ? "text-amber-400" : "text-neon-red"}`}>
                           <Mic2 className="mr-2 h-5 w-5" />
                           DJ Lineup
                         </h3>
                         <div className="grid gap-3 sm:grid-cols-2">
                           {event.djs.length > 0 ? event.djs.map((dj) => (
-                            <div key={dj.id} className="border-l-2 border-neon-red/50 pl-3">
+                            <div key={dj.id} className={`border-l-2 pl-3 ${isIndependence ? "border-amber-400" : "border-neon-red/50"}`}>
                               <p className="font-heading text-white">{dj.dj_name}</p>
                               {dj.dj_description && <p className="text-sm text-gray-400">{dj.dj_description}</p>}
                             </div>
@@ -120,8 +144,17 @@ export default function WeeklyLineup() {
                     </div>
 
                     <div className="flex flex-col gap-3 md:items-stretch md:justify-center">
-                      <Link to={`/events/${event.id}`} className="press-button-secondary text-center">Details</Link>
-                      <Link to={`/rsvp/${event.id}`} className="press-button text-center">RSVP</Link>
+                      <Link to={eventLink} className="press-button-secondary text-center">
+                        {isIndependence ? "Special Landing Page" : "Details"}
+                      </Link>
+                      <Link
+                        to={isIndependence ? "/independence#rsvp-form" : `/rsvp/${event.id}`}
+                        className={`text-center transition font-display uppercase tracking-wider py-3 ${
+                          isIndependence ? "bg-amber-500 hover:bg-amber-400 text-black" : "press-button"
+                        }`}
+                      >
+                        RSVP FREE IN BLACK
+                      </Link>
                     </div>
                   </article>
                 );

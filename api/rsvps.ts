@@ -79,28 +79,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             return res.status(500).json({ error: error.message });
         }
 
+        const isIndependenceEvent = data.event_id === 30;
+
         await Promise.all([
             sendBrandedEmail({
                 to: data.email,
-                subject: 'RSVP received | This Is Hip Hop Caribbean Events',
-                preview: 'Your RSVP has been received and is pending review.',
+                subject: isIndependenceEvent
+                    ? '🇯🇲 CONFIRMED: Independence Day Special (Jay-Z Black Album Tribute) | This Is Hip Hop'
+                    : 'RSVP received | This Is Hip Hop Caribbean Events',
+                preview: isIndependenceEvent
+                    ? 'Your Independence Day RSVP is confirmed! Wear Full Black for FREE entry.'
+                    : 'Your RSVP has been received and is pending review.',
                 from: emailSenders.events,
-                eyebrow: 'RSVP Received',
-                title: 'You are on the list',
-                intro: 'We received your RSVP request. The team will review the details and follow up if anything else is needed before the event.',
+                eyebrow: isIndependenceEvent ? 'Jamaica Independence Special' : 'RSVP Received',
+                title: isIndependenceEvent ? 'Dirt Off Your Shoulders — You are on the list!' : 'You are on the list',
+                intro: isIndependenceEvent
+                    ? "We've confirmed your RSVP for Thursday, August 6th at Dulce Lounge! Join us as we celebrate Jamaica Independence and 20 Years of Jay-Z's legendary Black Album."
+                    : 'We received your RSVP request. The team will review the details and follow up if anything else is needed before the event.',
                 sections: [
                     {
-                        title: 'RSVP Details',
+                        title: 'RSVP & Entry Details',
                         rows: [
-                            ['Name', data.name],
-                            ['Package', data.package_type.toUpperCase()],
-                            ['Group size', data.group_size || 1],
-                            ['Bottle selection', data.bottle_selection],
-                            ['Notes', data.special_notes],
+                            ['Guest Name', data.name],
+                            ['Event', isIndependenceEvent ? 'Independence Day Special: Dirt Off Your Shoulders' : `Event #${data.event_id}`],
+                            ['Date & Time', 'Thursday, August 6, 2026 @ 9:00 PM'],
+                            ['Venue', 'Dulce Lounge (22 Barbican Road, Kingston)'],
+                            ['Admission Rate', 'FREE in Full Black w/ RSVP ($500 w/ Standard RSVP, $1,000 Gate)'],
+                            ['Lineup', 'Main DJ Troy Finzi | Resident DJ Steamaz | Resident Andre Millwood'],
+                            ['Group Size', data.group_size || 1],
+                            ['Table / Notes', data.special_notes || 'None'],
                         ],
                     },
                 ],
-                action: { label: 'View Events', url: siteUrl('/events') },
+                action: { label: isIndependenceEvent ? 'View Independence Landing Page' : 'View Events', url: siteUrl(isIndependenceEvent ? '/independence' : '/events') },
             }),
             sendBrandedEmail({
                 to: adminEmails,

@@ -481,6 +481,35 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Independence Special Takeover Feature Banner */}
+      <section className="bg-gradient-to-r from-emerald-950 via-black to-amber-950 border-t-4 border-b-4 border-amber-500 py-12 px-4 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-[1fr_auto] gap-8 items-center">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/20 border border-emerald-400 text-emerald-400 rounded-full text-xs font-heading font-black tracking-widest uppercase">
+              <Sparkles className="w-3.5 h-3.5" />
+              JAMAICA INDEPENDENCE DAY SPECIAL • THURSDAY AUG 6TH
+            </div>
+            <h2 className="font-display text-5xl md:text-7xl text-white uppercase tracking-tight">
+              DIRT OFF YOUR <span className="text-amber-400">SHOULDERS</span>
+            </h2>
+            <p className="font-heading text-lg text-amber-200">
+              Celebrating Jay-Z The Black Album (20 Years of Greatness) • Dulce Lounge, Kingston
+            </p>
+            <p className="text-sm font-heading text-gray-300">
+              Admission: <span className="text-emerald-400 font-bold">FREE in Full Black w/ RSVP</span> • <span className="text-amber-300 font-bold">$500 w/ RSVP</span> • <span className="text-white">$1,000 Gate</span>
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link
+              to="/independence"
+              className="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-black font-display text-lg uppercase tracking-wider text-center transition shadow-lg shadow-amber-500/20"
+            >
+              CLAIM FREE RSVP NOW
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Weekly Board */}
       <section className="bg-[#111] px-4 py-20">
         <div className="mx-auto max-w-7xl">
@@ -494,20 +523,44 @@ export default function Home() {
 
           <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">
             {nextEvent && (
-              <Link to={`/events/${nextEvent.id}`} className="group grid gap-5 border-t-8 border-neon-red bg-black p-5 md:grid-cols-[220px_1fr]">
+              <Link
+                to={nextEvent.id === 30 || nextEvent.event_date === "2026-08-06" ? "/independence" : `/events/${nextEvent.id}`}
+                className={`group grid gap-5 bg-black p-5 md:grid-cols-[220px_1fr] transition ${
+                  nextEvent.id === 30 || nextEvent.event_date === "2026-08-06"
+                    ? "border-t-8 border-amber-500 bg-gradient-to-r from-amber-950/40 via-black to-emerald-950/40 shadow-xl shadow-amber-950/50"
+                    : "border-t-8 border-neon-red"
+                }`}
+              >
                 <div className="relative aspect-[4/5] overflow-hidden bg-white/5">
-                  <img src={nextEvent.flyer_url || "/brand/ilhh-logo.png"} alt={`${nextEvent.title} flyer`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+                  <img
+                    src={nextEvent.flyer_url || "/flyers/aug-week1-independence.jpg"}
+                    alt={`${nextEvent.title} flyer`}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  />
                 </div>
                 <div className="flex flex-col justify-between">
                   <div>
-                    <p className="mb-3 inline-flex bg-neon-red px-3 py-1 font-heading text-xs uppercase tracking-wider text-black">Next Thursday signal</p>
+                    <p className={`mb-3 inline-flex px-3 py-1 font-heading text-xs uppercase tracking-wider ${
+                      nextEvent.id === 30 || nextEvent.event_date === "2026-08-06"
+                        ? "bg-amber-400 text-black font-black"
+                        : "bg-neon-red text-black font-bold"
+                    }`}>
+                      {nextEvent.id === 30 || nextEvent.event_date === "2026-08-06" ? "🇯🇲 Independence Day Special" : "Next Thursday signal"}
+                    </p>
                     <h3 className="font-display text-4xl uppercase leading-none text-white md:text-6xl">{nextEvent.title}</h3>
-                    {nextEvent.sub_theme && <p className="mt-2 font-heading text-2xl text-neon-red">{nextEvent.sub_theme}</p>}
-                    <p className="mt-5 font-body text-gray-300">{nextEvent.description || nextEvent.theme || "RSVP, table reservations, happy hour energy, and the weekly hip hop home base."}</p>
+                    {nextEvent.sub_theme && <p className="mt-2 font-heading text-2xl text-amber-400">{nextEvent.sub_theme}</p>}
+                    <p className="mt-4 font-body text-gray-300">
+                      {nextEvent.description || nextEvent.theme || "RSVP, table reservations, happy hour energy, and the weekly hip hop home base."}
+                    </p>
+                    {(nextEvent.id === 30 || nextEvent.event_date === "2026-08-06") && (
+                      <div className="mt-3 inline-block p-2 bg-black/80 border border-amber-500/40 text-xs font-heading text-emerald-300">
+                        Entry: FREE in Full Black w/ RSVP • $500 w/ RSVP • $1,000 Gate
+                      </div>
+                    )}
                   </div>
                   <div className="mt-6 grid gap-3 font-heading text-white sm:grid-cols-2">
-                    <p className="flex items-center"><Calendar className="mr-3 h-5 w-5 text-neon-red" />{formatEventDate(nextEvent)}</p>
-                    <p className="flex items-center"><MapPin className="mr-3 h-5 w-5 text-neon-red" />{nextEvent.venue_name || "Dulce Lounge"}</p>
+                    <p className="flex items-center"><Calendar className="mr-3 h-5 w-5 text-amber-400" />{formatEventDate(nextEvent)}</p>
+                    <p className="flex items-center"><MapPin className="mr-3 h-5 w-5 text-amber-400" />{nextEvent.venue_name || "Dulce Lounge"}</p>
                   </div>
                 </div>
               </Link>

@@ -138,10 +138,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             throw error;
         }
 
-        const transformedEvents = events?.map(event => ({
-            ...event,
-            djs: event.event_djs || [],
-        }));
+        const transformedEvents = events?.map(event => {
+            const djs = event.event_djs || [];
+            if (event.id === 30 || event.event_date === '2026-08-06') {
+                return {
+                    ...event,
+                    title: (!event.title || event.title === 'ILHH Weekly') ? 'Independence Day Celebration' : event.title,
+                    theme: (!event.theme || event.theme === 'I Luv Hip Hop Thursdays') ? 'Celebrating Jay-Z The Black Album' : event.theme,
+                    sub_theme: (!event.sub_theme || event.sub_theme === 'Details TBA') ? 'Dirt Off Your Shoulders' : event.sub_theme,
+                    flyer_url: event.flyer_url || '/flyers/aug-week1-independence.jpg',
+                    description: event.description || 'Jamaica Independence Day Special celebrating Jay-Z The Black Album (20 Years of Greatness). Cover charge: $1,000 General / At The Gate. $500 with RSVP. FREE in full black with RSVP.',
+                    is_featured: true,
+                    is_special: true,
+                    djs: djs.length > 0 ? djs : [
+                        { id: 101, dj_name: 'Troy Finzi', dj_description: 'Main DJ', is_resident: 0 },
+                        { id: 102, dj_name: 'DJ Steamaz', dj_description: 'Resident DJ', is_resident: 1 },
+                        { id: 103, dj_name: 'Andre Millwood', dj_description: 'Resident DJ', is_resident: 1 },
+                    ]
+                };
+            }
+            return {
+                ...event,
+                djs,
+            };
+        });
 
         return res.status(200).json(transformedEvents || []);
     } catch (error: any) {
