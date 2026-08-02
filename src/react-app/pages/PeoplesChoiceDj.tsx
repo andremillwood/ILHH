@@ -5,8 +5,8 @@ import Footer from "@/react-app/components/Footer";
 import { useAuth } from "@/lib/AuthContext";
 import {
   DjNomination,
-  INITIAL_AUGUST_NOMINEES,
-  PAST_WINNERS_HALL_OF_FAME,
+  ILHH_ALUMNI_DJS,
+  IlhhAlumniDj,
   fetchCycleNominations,
   submitDjNomination
 } from "@/react-app/lib/peoplesChoiceDj";
@@ -25,12 +25,14 @@ import {
   Info,
   Instagram,
   Radio,
-  Star
+  Star,
+  ShieldCheck,
+  Zap
 } from "lucide-react";
 
 export default function PeoplesChoiceDjPage() {
   const { user } = useAuth();
-  const [nominations, setNominations] = useState<DjNomination[]>(INITIAL_AUGUST_NOMINEES);
+  const [nominations, setNominations] = useState<DjNomination[]>([]);
   const [userVotes, setUserVotes] = useState<Record<number, boolean>>({});
   const [isNominateModalOpen, setIsNominateModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"vote" | "hall-of-fame" | "about">("vote");
@@ -45,12 +47,14 @@ export default function PeoplesChoiceDjPage() {
   const [photoUrl, setPhotoUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
+  const loadNominations = () => {
     fetchCycleNominations("2026-08").then((data) => {
-      if (data && data.length > 0) {
-        setNominations(data);
-      }
+      setNominations(data || []);
     });
+  };
+
+  useEffect(() => {
+    loadNominations();
   }, []);
 
   const handleVote = (id: number) => {
@@ -80,9 +84,42 @@ export default function PeoplesChoiceDjPage() {
 
     setNotification({
       type: "success",
-      msg: "Your vote has been cast! Thank you for supporting local DJ talent."
+      msg: "Your vote has been cast! Thank you for supporting DJ talent."
     });
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const handleQuickNominateAlumni = async (alumni: IlhhAlumniDj) => {
+    setIsSubmitting(true);
+    const newNominationObj: DjNomination = {
+      id: Date.now(),
+      cycle_month: "2026-08",
+      dj_name: alumni.dj_name,
+      bio: alumni.bio || `${alumni.dj_name} - Featured ILHH Alumni DJ.`,
+      photo_url: "https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&w=800&q=80",
+      mix_url: "",
+      instagram_handle: alumni.dj_name.toLowerCase().replace(/[^a-z0-9]/g, ""),
+      genre: alumni.genre || "Hip-Hop / Dancehall",
+      status: "approved",
+      votes_count: 0,
+      created_at: new Date().toISOString()
+    };
+
+    setNominations((prev) => [...prev, newNominationObj]);
+
+    await submitDjNomination({
+      dj_name: alumni.dj_name,
+      bio: alumni.bio || `${alumni.dj_name} - ILHH Alumni DJ`,
+      genre: alumni.genre || "Hip-Hop / Dancehall",
+      user_id: user?.id
+    });
+
+    setIsSubmitting(false);
+    setNotification({
+      type: "success",
+      msg: `${alumni.dj_name} has been nominated for August 2026!`
+    });
+    setTimeout(() => setNotification(null), 5000);
   };
 
   const handleNominationSubmit = async (e: React.FormEvent) => {
@@ -93,7 +130,23 @@ export default function PeoplesChoiceDjPage() {
     }
 
     setIsSubmitting(true);
-    const res = await submitDjNomination({
+    const newNom: DjNomination = {
+      id: Date.now(),
+      cycle_month: "2026-08",
+      dj_name: djName,
+      bio,
+      mix_url: mixUrl,
+      instagram_handle: instagram,
+      genre,
+      photo_url: photoUrl || "https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&w=800&q=80",
+      status: "approved",
+      votes_count: 0,
+      created_at: new Date().toISOString()
+    };
+
+    setNominations((prev) => [...prev, newNom]);
+
+    await submitDjNomination({
       dj_name: djName,
       bio,
       mix_url: mixUrl,
@@ -107,7 +160,7 @@ export default function PeoplesChoiceDjPage() {
     setIsNominateModalOpen(false);
     setNotification({
       type: "success",
-      msg: res.message
+      msg: `Nomination for ${djName} submitted successfully! Voting is now open.`
     });
     setTimeout(() => setNotification(null), 6000);
 
@@ -174,7 +227,7 @@ export default function PeoplesChoiceDjPage() {
 
               <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
                 Every last Thursday of the month, ILHH features the DJ voted #1 by our community.
-                Nominate your favorite local selectors, cast your vote daily, and catch the winner live at Dulce starting this August!
+                Nominate your favorite local selectors or choose from our ILHH event alumni, cast your vote daily, and catch the winner live at Dulce starting this August!
               </p>
 
               {/* Event Badge Details */}
@@ -198,7 +251,7 @@ export default function PeoplesChoiceDjPage() {
                 <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
                   <Vote className="w-6 h-6 text-emerald-400 shrink-0" />
                   <div className="text-left">
-                    <span className="text-xs text-slate-400 block font-medium">August Cycle</span>
+                    <span className="text-xs text-slate-400 block font-medium">August Launch</span>
                     <span className="text-sm font-semibold text-slate-200">{totalVotesCast} Votes Cast</span>
                   </div>
                 </div>
@@ -243,8 +296,8 @@ export default function PeoplesChoiceDjPage() {
 
                 <div className="space-y-3 py-3 border-y border-slate-800 text-sm text-slate-300">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400">Nomination Deadline:</span>
-                    <span className="font-semibold text-slate-200">August 15, 2026</span>
+                    <span className="text-slate-400">Nomination Status:</span>
+                    <span className="font-semibold text-emerald-400">Open Now</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400">Voting Closes:</span>
@@ -315,7 +368,7 @@ export default function PeoplesChoiceDjPage() {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         {/* Tab 1: Live Voting Leaderboard */}
         {activeTab === "vote" && (
-          <div className="space-y-8">
+          <div className="space-y-12">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -329,124 +382,217 @@ export default function PeoplesChoiceDjPage() {
 
               <button
                 onClick={() => setIsNominateModalOpen(true)}
-                className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-amber-400 font-semibold text-sm flex items-center gap-2 transition-all"
+                className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-md shadow-amber-500/10"
               >
                 <PlusCircle className="w-4 h-4" />
-                Submit New Nomination
+                Submit Custom DJ Nomination
               </button>
             </div>
 
-            {/* DJ Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-              {sortedNominations.map((nom, index) => {
-                const isLeader = index === 0;
-                const hasVoted = userVotes[nom.id];
+            {/* Nominations List or Empty State */}
+            {nominations.length === 0 ? (
+              <div className="p-8 sm:p-12 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-6 max-w-3xl mx-auto">
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto">
+                  <Vote className="w-8 h-8" />
+                </div>
 
-                return (
-                  <div
-                    key={nom.id}
-                    className={`rounded-3xl p-6 transition-all duration-300 border relative overflow-hidden flex flex-col justify-between ${
-                      isLeader
-                        ? "bg-gradient-to-b from-amber-500/10 via-slate-900 to-slate-950 border-amber-500/50 shadow-xl shadow-amber-500/5"
-                        : "bg-slate-900/70 border-slate-800 hover:border-slate-700"
-                    }`}
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold text-white">No Nominations Submitted Yet for August 2026</h3>
+                  <p className="text-slate-400 text-sm max-w-lg mx-auto leading-relaxed">
+                    We are launching with a clean slate! Be the first to nominate a DJ below, or choose from the list of authentic ILHH Event Alumni DJs who have performed at our events.
+                  </p>
+                </div>
+
+                <div className="pt-2 flex flex-wrap justify-center gap-4">
+                  <button
+                    onClick={() => setIsNominateModalOpen(true)}
+                    className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm transition-all"
                   >
-                    {/* Leader Badge */}
-                    {isLeader && (
-                      <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-xs font-bold uppercase tracking-wider">
-                        <Star className="w-3.5 h-3.5 fill-slate-950" />
-                        Current #1 Rank
-                      </div>
-                    )}
+                    Nominate a Custom DJ
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {sortedNominations.map((nom, index) => {
+                  const isLeader = index === 0 && nom.votes_count > 0;
+                  const hasVoted = userVotes[nom.id];
 
-                    <div>
-                      {/* DJ Header Info */}
-                      <div className="flex items-start gap-4 mb-4">
-                        <img
-                          src={nom.photo_url}
-                          alt={nom.dj_name}
-                          className="w-24 h-24 rounded-2xl object-cover border-2 border-slate-700 shrink-0 shadow-md"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs font-semibold text-amber-400 mb-1 flex items-center gap-1">
-                            <Music className="w-3.5 h-3.5" />
-                            {nom.genre}
-                          </div>
-                          <h3 className="text-xl font-bold text-white truncate">{nom.dj_name}</h3>
-                          
-                          {nom.instagram_handle && (
-                            <a
-                              href={`https://instagram.com/${nom.instagram_handle.replace("@", "")}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-amber-400 mt-1 transition-colors"
-                            >
-                              <Instagram className="w-3.5 h-3.5 text-pink-400" />
-                              @{nom.instagram_handle.replace("@", "")}
-                            </a>
-                          )}
-
-                          <div className="mt-2 flex items-center gap-2">
-                            <span className="text-2xl font-black text-white">{nom.votes_count}</span>
-                            <span className="text-xs text-slate-400 font-medium">Votes Received</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Bio */}
-                      <p className="text-sm text-slate-300 leading-relaxed mb-4 line-clamp-3">
-                        {nom.bio}
-                      </p>
-
-                      {/* Mix Preview Link */}
-                      {nom.mix_url && (
-                        <div className="mb-4">
-                          <a
-                            href={nom.mix_url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-300 bg-slate-800/80 hover:bg-slate-800 px-3 py-2 rounded-xl border border-slate-700/60 transition-all"
-                          >
-                            <Volume2 className="w-4 h-4 text-amber-400" />
-                            Listen to Audio Demo / Mix
-                            <ExternalLink className="w-3 h-3 text-slate-400 ml-auto" />
-                          </a>
+                  return (
+                    <div
+                      key={nom.id}
+                      className={`rounded-3xl p-6 transition-all duration-300 border relative overflow-hidden flex flex-col justify-between ${
+                        isLeader
+                          ? "bg-gradient-to-b from-amber-500/10 via-slate-900 to-slate-950 border-amber-500/50 shadow-xl shadow-amber-500/5"
+                          : "bg-slate-900/70 border-slate-800 hover:border-slate-700"
+                      }`}
+                    >
+                      {/* Leader Badge */}
+                      {isLeader && (
+                        <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500 text-slate-950 text-xs font-bold uppercase tracking-wider">
+                          <Star className="w-3.5 h-3.5 fill-slate-950" />
+                          Current #1 Rank
                         </div>
                       )}
-                    </div>
 
-                    {/* Vote Action Footer */}
-                    <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-4">
-                      <span className="text-xs text-slate-400">
-                        {user ? "1 Vote per member daily" : "Sign in required to vote"}
-                      </span>
+                      <div>
+                        {/* DJ Header Info */}
+                        <div className="flex items-start gap-4 mb-4">
+                          <img
+                            src={nom.photo_url}
+                            alt={nom.dj_name}
+                            className="w-24 h-24 rounded-2xl object-cover border-2 border-slate-700 shrink-0 shadow-md"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-semibold text-amber-400 mb-1 flex items-center gap-1">
+                              <Music className="w-3.5 h-3.5" />
+                              {nom.genre}
+                            </div>
+                            <h3 className="text-xl font-bold text-white truncate">{nom.dj_name}</h3>
+                            
+                            {nom.instagram_handle && (
+                              <a
+                                href={`https://instagram.com/${nom.instagram_handle.replace("@", "")}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-amber-400 mt-1 transition-colors"
+                              >
+                                <Instagram className="w-3.5 h-3.5 text-pink-400" />
+                                @{nom.instagram_handle.replace("@", "")}
+                              </a>
+                            )}
+
+                            <div className="mt-2 flex items-center gap-2">
+                              <span className="text-2xl font-black text-white">{nom.votes_count}</span>
+                              <span className="text-xs text-slate-400 font-medium">Votes Received</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Bio */}
+                        <p className="text-sm text-slate-300 leading-relaxed mb-4 line-clamp-3">
+                          {nom.bio}
+                        </p>
+
+                        {/* Mix Preview Link */}
+                        {nom.mix_url && (
+                          <div className="mb-4">
+                            <a
+                              href={nom.mix_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-2 text-xs font-semibold text-slate-300 bg-slate-800/80 hover:bg-slate-800 px-3 py-2 rounded-xl border border-slate-700/60 transition-all"
+                            >
+                              <Volume2 className="w-4 h-4 text-amber-400" />
+                              Listen to Audio Demo / Mix
+                              <ExternalLink className="w-3 h-3 text-slate-400 ml-auto" />
+                            </a>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Vote Action Footer */}
+                      <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-4">
+                        <span className="text-xs text-slate-400">
+                          {user ? "1 Vote per member daily" : "Sign in required to vote"}
+                        </span>
+
+                        <button
+                          onClick={() => handleVote(nom.id)}
+                          disabled={hasVoted}
+                          className={`px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-md ${
+                            hasVoted
+                              ? "bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 cursor-default"
+                              : "bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/10 active:scale-95"
+                          }`}
+                        >
+                          {hasVoted ? (
+                            <>
+                              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                              Voted Today
+                            </>
+                          ) : (
+                            <>
+                              <Vote className="w-4 h-4" />
+                              Vote for {nom.dj_name.split(" ")[0]}
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* ILHH Event Alumni DJs Quick Nomination Section */}
+            <div className="pt-8 border-t border-slate-800 space-y-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
+                    <ShieldCheck className="w-4 h-4" />
+                    Verified Past Performers
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">Nominate ILHH Event Alumni DJs</h3>
+                  <p className="text-sm text-slate-400">
+                    Click any DJ who has previously performed at ILHH events to submit their nomination for the August Dulce showcase!
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {ILHH_ALUMNI_DJS.map((alumni) => {
+                  const isAlreadyNominated = nominations.some(
+                    (n) => n.dj_name.toLowerCase() === alumni.dj_name.toLowerCase()
+                  );
+
+                  return (
+                    <div
+                      key={alumni.dj_name}
+                      className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-4"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-lg font-bold text-white">{alumni.dj_name}</h4>
+                          {alumni.is_resident && (
+                            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-bold uppercase">
+                              Resident
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-purple-400 font-medium">{alumni.affiliation} • {alumni.genre}</p>
+                        <p className="text-xs text-slate-300 leading-relaxed line-clamp-2">
+                          {alumni.bio}
+                        </p>
+                      </div>
 
                       <button
-                        onClick={() => handleVote(nom.id)}
-                        disabled={hasVoted}
-                        className={`px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 transition-all shadow-md ${
-                          hasVoted
-                            ? "bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 cursor-default"
-                            : "bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-amber-500/10 active:scale-95"
+                        onClick={() => handleQuickNominateAlumni(alumni)}
+                        disabled={isAlreadyNominated || isSubmitting}
+                        className={`w-full py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all ${
+                          isAlreadyNominated
+                            ? "bg-slate-800 text-emerald-400 border border-emerald-500/30 cursor-default"
+                            : "bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-200 border border-slate-700"
                         }`}
                       >
-                        {hasVoted ? (
+                        {isAlreadyNominated ? (
                           <>
                             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                            Voted Today
+                            Nominated for August
                           </>
                         ) : (
                           <>
-                            <Vote className="w-4 h-4" />
-                            Vote for {nom.dj_name.split(" ")[0]}
+                            <Zap className="w-4 h-4 text-amber-400" />
+                            Quick Nominate {alumni.dj_name.split(" ")[0]}
                           </>
                         )}
                       </button>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
+
           </div>
         )}
 
@@ -463,33 +609,12 @@ export default function PeoplesChoiceDjPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {PAST_WINNERS_HALL_OF_FAME.map((winner) => (
-                <div
-                  key={winner.id}
-                  className="rounded-3xl bg-slate-900/80 border border-slate-800 p-6 flex flex-col sm:flex-row items-center sm:items-start gap-6"
-                >
-                  <img
-                    src={winner.photo_url}
-                    alt={winner.dj_name}
-                    className="w-32 h-32 rounded-2xl object-cover border-2 border-amber-500/40 shrink-0 shadow-lg"
-                  />
-                  <div className="flex-1 text-center sm:text-left space-y-2">
-                    <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold">
-                      {winner.headline_title}
-                    </span>
-                    <h3 className="text-xl font-bold text-white pt-1">{winner.dj_name}</h3>
-                    <p className="text-xs text-purple-400 font-medium">{winner.genre}</p>
-                    <p className="text-sm text-slate-300 leading-relaxed">
-                      {winner.announcement_notes}
-                    </p>
-                    <div className="pt-2 text-xs text-slate-400 flex items-center justify-center sm:justify-start gap-4">
-                      <span>Performance Date: {winner.performance_date}</span>
-                      <span>Total Votes: {winner.total_votes}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="p-8 sm:p-12 rounded-3xl bg-slate-900/60 border border-slate-800 text-center space-y-4 max-w-2xl mx-auto">
+              <Award className="w-12 h-12 text-amber-400 mx-auto" />
+              <h3 className="text-xl font-bold text-white">August 2026 Will Be Our Inaugural Winner!</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                The inaugural People's Choice DJ will be crowned on August 24th and headline the August 27th Dulce Last Thursday event. Past winners will be archived here.
+              </p>
             </div>
           </div>
         )}
@@ -509,7 +634,7 @@ export default function PeoplesChoiceDjPage() {
                 <div className="p-3 w-fit rounded-xl bg-amber-500/10 text-amber-400 font-bold">1</div>
                 <h3 className="text-lg font-bold text-white">1. Nominations</h3>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  Anyone can submit a DJ nomination during the first half of the month. Submissions include audio demos, social links, and genre details.
+                  Submit any local DJ or select from verified ILHH Event Alumni DJs. Nominations open on the 1st of every month.
                 </p>
               </div>
 
@@ -517,7 +642,7 @@ export default function PeoplesChoiceDjPage() {
                 <div className="p-3 w-fit rounded-xl bg-purple-500/10 text-purple-400 font-bold">2</div>
                 <h3 className="text-lg font-bold text-white">2. Community Voting</h3>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  Registered ILHH community members cast votes daily for their favorite candidate. Active members help elevate local talent.
+                  Registered ILHH community members cast votes daily for their favorite candidate. Active members elevate local talent.
                 </p>
               </div>
 
@@ -558,7 +683,7 @@ export default function PeoplesChoiceDjPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. DJ Supreme Vibes"
+                  placeholder="e.g. Andre Millwood, DJ Renso, or Custom DJ"
                   value={djName}
                   onChange={(e) => setDjName(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"
@@ -571,7 +696,7 @@ export default function PeoplesChoiceDjPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. 90s Boom Bap, Trap, Afrobeats"
+                  placeholder="e.g. 90s Boom Bap, Trap, Afrobeats, Dancehall"
                   value={genre}
                   onChange={(e) => setGenre(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500"

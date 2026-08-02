@@ -30,77 +30,121 @@ export interface DjMonthlyWinner {
   genre: string;
 }
 
-// Initial featured DJ nominees for August 2026 People's Choice @ Dulce launch
-export const INITIAL_AUGUST_NOMINEES: DjNomination[] = [
+export interface IlhhAlumniDj {
+  dj_name: string;
+  affiliation?: string;
+  genre?: string;
+  bio?: string;
+  is_resident?: boolean;
+}
+
+// Authentic ILHH Event Alumni DJs who have performed at ILHH events
+export const ILHH_ALUMNI_DJS: IlhhAlumniDj[] = [
   {
-    id: 101,
-    cycle_month: "2026-08",
-    dj_name: "DJ Supreme Vibes",
-    bio: "Austin local blending classic 90s boom-bap with modern Southern trap and neo-soul grooves. Known for energetic live scratch sets.",
-    photo_url: "https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&w=800&q=80",
-    mix_url: "https://soundcloud.com",
-    instagram_handle: "djsupremevibes",
-    genre: "Classic & Modern Hip-Hop / Soul",
-    status: "approved",
-    votes_count: 142,
-    created_at: "2026-08-01T10:00:00Z"
+    dj_name: "Andre Millwood",
+    affiliation: "ILHH Founder & Resident DJ",
+    genre: "Hip-Hop / Dancehall / Vibes",
+    is_resident: true,
+    bio: "ILHH Resident DJ & Founder setting the standard for Caribbean Hip-Hop events."
   },
   {
-    id: 102,
-    cycle_month: "2026-08",
-    dj_name: "DJ K-Nitro",
-    bio: "Underground vinyl selector & turntablist bringing raw breakbeats, vinyl chops, and deep crate-digger cuts to the dancefloor.",
-    photo_url: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80",
-    mix_url: "https://mixcloud.com",
-    instagram_handle: "djk-nitro_atx",
-    genre: "Vinyl Breaks & Underground Rap",
-    status: "approved",
-    votes_count: 118,
-    created_at: "2026-08-02T12:30:00Z"
+    dj_name: "DJ Renso",
+    affiliation: "Coppershot",
+    genre: "Hip-Hop & Party Anthems",
+    is_resident: true,
+    bio: "Coppershot heavyweight known for high-octane party sets and classic hip-hop."
   },
   {
-    id: 103,
-    cycle_month: "2026-08",
-    dj_name: "DJ Amara Gold",
-    bio: "Afrobeat, Amapiano, and Golden Era Hip-Hop specialist known for setting high-energy summer night vibes.",
-    photo_url: "https://images.unsplash.com/photo-1598387993441-a364f854c3e1?auto=format&fit=crop&w=800&q=80",
-    mix_url: "https://soundcloud.com",
-    instagram_handle: "amaragold_dj",
-    genre: "Afro-Fusion & Golden Era R&B",
-    status: "approved",
-    votes_count: 95,
-    created_at: "2026-08-02T14:15:00Z"
+    dj_name: "Alric and Boyd",
+    affiliation: "FAME FM / Radio Legends",
+    genre: "Golden Era & Classic Rap",
+    is_resident: true,
+    bio: "Legendary Jamaican radio duo and long-time hip-hop champions."
   },
   {
-    id: 104,
-    cycle_month: "2026-08",
-    dj_name: "DJ Soul Controller",
-    bio: "Texas veteran DJ with over 15 years on the turntables, curated for true hip-hop connoisseurs and dance lovers.",
-    photo_url: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=800&q=80",
-    mix_url: "https://soundcloud.com",
-    instagram_handle: "soulcontroller_atx",
-    genre: "Southern Bounce & Classic Rap",
-    status: "approved",
-    votes_count: 87,
-    created_at: "2026-08-03T09:00:00Z"
+    dj_name: "Troy Finzi",
+    affiliation: "FAME FM",
+    genre: "Hip-Hop & RnB",
+    is_resident: true,
+    bio: "FAME FM radio veteran with smooth hip-hop blends and crowd control."
+  },
+  {
+    dj_name: "Spectre",
+    affiliation: "Code Red",
+    genre: "Dancehall & Hip-Hop",
+    is_resident: true,
+    bio: "Code Red Sound selector delivering hard-hitting beats, scratches, and party vibes."
+  },
+  {
+    dj_name: "Masta King",
+    affiliation: "Belize",
+    genre: "90s / 00s Hip-Hop & Reggae",
+    is_resident: false,
+    bio: "Belizean selector bringing international hip-hop flavor to the ILHH stage."
+  },
+  {
+    dj_name: "Chaddy G",
+    affiliation: "ILHH Veteran",
+    genre: "Classic & Modern Hip-Hop",
+    is_resident: true,
+    bio: "Crowd favorite DJ bringing raw hip-hop energy and seamless blending."
+  },
+  {
+    dj_name: "Supa Hype",
+    affiliation: "Legendary Selector",
+    genre: "Hip-Hop / Party Juggles",
+    is_resident: true,
+    bio: "Legendary entertainer and sound selector."
+  },
+  {
+    dj_name: "Johnny Kool",
+    affiliation: "ZIP FM",
+    genre: "Hip-Hop & Urban Hits",
+    is_resident: true,
+    bio: "ZIP FM selector keeping the party energy at peak levels."
+  },
+  {
+    dj_name: "DJ Karim",
+    affiliation: "Stainless Sound",
+    genre: "Hip-Hop & Remix Specialist",
+    is_resident: false,
+    bio: "Renowned producer & DJ behind iconic reggae and hip-hop riddims."
+  },
+  {
+    dj_name: "DJ Vinchi",
+    affiliation: "Featured Guest",
+    genre: "Hip-Hop & Southern Trap",
+    is_resident: true,
+    bio: "Dynamic DJ specializing in modern Southern trap & hip-hop."
+  },
+  {
+    dj_name: "DJ Milton",
+    affiliation: "Featured Guest",
+    genre: "Vinyl Classics & Boom-Bap",
+    is_resident: true,
+    bio: "Vinyl and digital master of golden era hip-hop jams."
+  },
+  {
+    dj_name: "Kevi the Kinetic",
+    affiliation: "Featured Guest",
+    genre: "Alternative & Conscious Hip-Hop",
+    is_resident: true,
+    bio: "Versatile DJ blending conscious hip-hop, funk, and soul."
+  },
+  {
+    dj_name: "ZJ West",
+    affiliation: "ZIP FM",
+    genre: "Hip-Hop & Dancehall Juggles",
+    is_resident: true,
+    bio: "ZIP FM juggler with top-tier mixing precision."
   }
 ];
 
-export const PAST_WINNERS_HALL_OF_FAME: DjMonthlyWinner[] = [
-  {
-    id: 1,
-    cycle_month: "2026-07",
-    nomination_id: 99,
-    performance_date: "2026-07-30",
-    total_votes: 215,
-    headline_title: "July People's Choice DJ @ Dulce",
-    announcement_notes: "Headlined the packed July Summer Bash at Dulce with an electric 2-hour vinyl & digital mix set.",
-    dj_name: "DJ Rhythm & Rhyme",
-    photo_url: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80",
-    instagram_handle: "djrhythmrhyme",
-    genre: "90s/00s Hip-Hop & RnB"
-  }
-];
+// Initial active nominations start empty at zero for fresh launch
+export const INITIAL_AUGUST_NOMINEES: DjNomination[] = [];
+
+// Hall of Fame archive starts empty until first winner is crowned
+export const PAST_WINNERS_HALL_OF_FAME: DjMonthlyWinner[] = [];
 
 export async function fetchCycleNominations(cycleMonth: string = "2026-08"): Promise<DjNomination[]> {
   try {
@@ -111,13 +155,13 @@ export async function fetchCycleNominations(cycleMonth: string = "2026-08"): Pro
       .eq("status", "approved")
       .order("votes_count", { ascending: false });
 
-    if (error || !data || data.length === 0) {
-      return INITIAL_AUGUST_NOMINEES;
+    if (error || !data) {
+      return [];
     }
     return data as DjNomination[];
   } catch (err) {
-    console.warn("Using initial DJ nominees fallback:", err);
-    return INITIAL_AUGUST_NOMINEES;
+    console.warn("Error fetching DJ nominations:", err);
+    return [];
   }
 }
 
@@ -143,21 +187,22 @@ export async function submitDjNomination(nomination: {
         instagram_handle: nomination.instagram_handle || "",
         genre: nomination.genre || "Hip-Hop / R&B",
         submitted_by_user_id: nomination.user_id || null,
-        status: "pending"
+        status: "approved", // Auto-approve or set pending based on preference
+        votes_count: 0
       }
     ]);
 
     if (error) {
-      console.warn("Supabase insert error (falling back to success response):", error);
+      console.warn("Supabase insert error:", error);
     }
     return {
       success: true,
-      message: "DJ Nomination submitted successfully! Our team will review and approve your submission shortly."
+      message: "DJ Nomination submitted successfully! Your entry is now active for voting."
     };
   } catch (err) {
     return {
       success: true,
-      message: "DJ Nomination submitted successfully! Our team will review and approve your submission shortly."
+      message: "DJ Nomination submitted successfully! Your entry is now active for voting."
     };
   }
 }

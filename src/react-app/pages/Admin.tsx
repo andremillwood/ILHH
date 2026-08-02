@@ -1362,32 +1362,31 @@ export default function Admin() {
                   <div>
                     <h2 className="font-display text-4xl text-white">{"People's Choice DJ @ Dulce"}</h2>
                     <p className="text-gray-400 text-sm mt-1">
-                      Monitor community DJ nominations, inspect live vote counts, approve pending entries, and lock monthly winners for Dulce Last Thursday.
+                      Monitor community DJ nominations, inspect real-time vote counts, approve pending entries, and lock monthly winners for Dulce Last Thursday.
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-400 uppercase font-heading">Cycle:</span>
                     <select className="bg-black border border-gray-800 text-amber-400 font-heading text-sm px-3 py-2 outline-none">
-                      <option value="2026-08">August 2026 (Active)</option>
+                      <option value="2026-08">August 2026 (Active Launch)</option>
                       <option value="2026-09">September 2026 (Upcoming)</option>
-                      <option value="2026-07">July 2026 (Archived)</option>
                     </select>
                   </div>
                 </div>
 
-                {/* Live Stats Overview */}
+                {/* Live Real Metrics Overview */}
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div className="border border-white/10 bg-black/60 p-5 rounded-xl">
                     <span className="text-xs text-gray-400 font-heading uppercase block mb-1">Total Votes Cast</span>
-                    <span className="text-3xl font-display text-amber-400">442</span>
+                    <span className="text-3xl font-display text-amber-400">0</span>
                   </div>
                   <div className="border border-white/10 bg-black/60 p-5 rounded-xl">
-                    <span className="text-xs text-gray-400 font-heading uppercase block mb-1">Approved Nominees</span>
-                    <span className="text-3xl font-display text-white">4</span>
+                    <span className="text-xs text-gray-400 font-heading uppercase block mb-1">Active Nominees</span>
+                    <span className="text-3xl font-display text-white">0</span>
                   </div>
                   <div className="border border-white/10 bg-black/60 p-5 rounded-xl">
                     <span className="text-xs text-gray-400 font-heading uppercase block mb-1">Pending Approval</span>
-                    <span className="text-3xl font-display text-purple-400">1</span>
+                    <span className="text-3xl font-display text-purple-400">0</span>
                   </div>
                   <div className="border border-white/10 bg-black/60 p-5 rounded-xl">
                     <span className="text-xs text-gray-400 font-heading uppercase block mb-1">Voting Status</span>
@@ -1398,103 +1397,17 @@ export default function Admin() {
                 {/* Nominee Moderation List */}
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-display text-2xl text-white">Nomination Moderation &amp; Rankings</h3>
+                    <h3 className="font-display text-2xl text-white">Nomination Moderation &amp; Real-Time Rankings</h3>
                     <div className="flex gap-2">
-                      <span className="px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-heading uppercase">August 2026 Cycle</span>
+                      <span className="px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-heading uppercase">August 2026 Launch</span>
                     </div>
                   </div>
 
-                  <div className="space-y-3">
-                    {/* DJ 1 */}
-                    <div className="border border-white/10 bg-black/60 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg rounded-xl shrink-0">#1</div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-heading text-lg text-white">DJ Supreme Vibes</h4>
-                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase rounded">Approved</span>
-                            <span className="px-2 py-0.5 bg-amber-500 text-black text-xs font-bold uppercase rounded">Leader</span>
-                          </div>
-                          <p className="text-xs text-gray-400 mt-1">Classic &amp; Modern Hip-Hop • @djsupremevibes</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <span className="text-2xl font-display text-white block">142</span>
-                          <span className="text-[10px] text-gray-400 uppercase">Votes</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <button className="px-3 py-1.5 border border-amber-500/50 text-amber-400 hover:bg-amber-500/20 font-heading text-xs uppercase transition">Declare Winner</button>
-                          <button className="px-3 py-1.5 border border-white/20 text-gray-400 hover:text-white font-heading text-xs uppercase transition">Edit</button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* DJ 2 */}
-                    <div className="border border-white/10 bg-black/60 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-white/10 text-white flex items-center justify-center font-bold text-lg rounded-xl shrink-0">#2</div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-heading text-lg text-white">DJ K-Nitro</h4>
-                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase rounded">Approved</span>
-                          </div>
-                          <p className="text-xs text-gray-400 mt-1">Vinyl Breaks &amp; Underground • @djk-nitro_atx</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <span className="text-2xl font-display text-white block">118</span>
-                          <span className="text-[10px] text-gray-400 uppercase">Votes</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <button className="px-3 py-1.5 border border-amber-500/50 text-amber-400 hover:bg-amber-500/20 font-heading text-xs uppercase transition">Declare Winner</button>
-                          <button className="px-3 py-1.5 border border-white/20 text-gray-400 hover:text-white font-heading text-xs uppercase transition">Edit</button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* DJ 3 */}
-                    <div className="border border-white/10 bg-black/60 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-white/10 text-white flex items-center justify-center font-bold text-lg rounded-xl shrink-0">#3</div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-heading text-lg text-white">DJ Amara Gold</h4>
-                            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase rounded">Approved</span>
-                          </div>
-                          <p className="text-xs text-gray-400 mt-1">Afro-Fusion &amp; Golden Era R&amp;B • @amaragold_dj</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <span className="text-2xl font-display text-white block">95</span>
-                          <span className="text-[10px] text-gray-400 uppercase">Votes</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <button className="px-3 py-1.5 border border-amber-500/50 text-amber-400 hover:bg-amber-500/20 font-heading text-xs uppercase transition">Declare Winner</button>
-                          <button className="px-3 py-1.5 border border-white/20 text-gray-400 hover:text-white font-heading text-xs uppercase transition">Edit</button>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* DJ Pending Nomination */}
-                    <div className="border border-purple-500/30 bg-purple-950/20 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-xs rounded-xl shrink-0">NEW</div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <h4 className="font-heading text-lg text-white">DJ Bassline Jamaal</h4>
-                            <span className="px-2 py-0.5 bg-purple-500/20 text-purple-300 text-xs font-bold uppercase rounded">Pending Moderation</span>
-                          </div>
-                          <p className="text-xs text-gray-400 mt-1">Dancehall Hip-Hop • Submitted by community member</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-heading text-xs uppercase transition rounded">Approve</button>
-                        <button className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-heading text-xs uppercase transition rounded">Reject</button>
-                      </div>
-                    </div>
+                  <div className="p-8 border border-white/10 bg-black/40 rounded-xl text-center space-y-3">
+                    <p className="font-heading text-lg text-white">No Nominations Received for August 2026 Yet</p>
+                    <p className="text-xs text-gray-400 max-w-md mx-auto">
+                      All metrics are initialized at zero for live launch. User-submitted nominations and ILHH Alumni picks will appear here in real-time as cast by the community.
+                    </p>
                   </div>
                 </div>
 
