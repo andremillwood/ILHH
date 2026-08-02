@@ -53,26 +53,31 @@ ALTER TABLE dj_nominations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dj_votes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE dj_monthly_winners ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
+-- RLS Policies (Idempotent with DROP POLICY IF EXISTS)
 -- dj_nominations
+DROP POLICY IF EXISTS "Public can view approved DJ nominations" ON dj_nominations;
 CREATE POLICY "Public can view approved DJ nominations"
   ON dj_nominations FOR SELECT
   USING (status = 'approved' OR auth.uid() = submitted_by_user_id);
 
+DROP POLICY IF EXISTS "Authenticated users can submit DJ nominations" ON dj_nominations;
 CREATE POLICY "Authenticated users can submit DJ nominations"
   ON dj_nominations FOR INSERT
   WITH CHECK (auth.role() = 'authenticated');
 
 -- dj_votes
+DROP POLICY IF EXISTS "Authenticated users can view own votes" ON dj_votes;
 CREATE POLICY "Authenticated users can view own votes"
   ON dj_votes FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Authenticated users can cast votes" ON dj_votes;
 CREATE POLICY "Authenticated users can cast votes"
   ON dj_votes FOR INSERT
   WITH CHECK (auth.role() = 'authenticated' AND auth.uid() = user_id);
 
 -- dj_monthly_winners
+DROP POLICY IF EXISTS "Public can view monthly DJ winners" ON dj_monthly_winners;
 CREATE POLICY "Public can view monthly DJ winners"
   ON dj_monthly_winners FOR SELECT
   USING (true);
