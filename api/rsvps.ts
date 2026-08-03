@@ -18,11 +18,78 @@ const RsvpSchema = z.object({
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
+    }
+
+    const { action } = req.query;
+
+    // Inline Supabase logic
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+        throw new Error('Missing Supabase server environment variables in rsvps.ts');
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+        auth: { persistSession: false }
+    });
+
+    if (req.method === 'GET' && action === 'remind') {
+        try {
+            const { data: rsvps, error } = await supabase
+                .from('rsvps')
+                .select('*')
+                .eq('event_id', 30);
+
+            if (error) throw error;
+            if (!rsvps || rsvps.length === 0) {
+                return res.status(200).json({ success: true, count: 0, message: 'No RSVPs found for Event #30' });
+            }
+
+            const emailPromises = rsvps.map((rsvp) => {
+                return sendBrandedEmail({
+                    to: rsvp.email,
+                    subject: 'TOMORROW NIGHT 🇯🇲 ILHH Independence Day Special | Jay-Z Black Album Tribute',
+                    preview: 'Tomorrow night at Dulce Lounge! Wear Full Black for FREE entry.',
+                    from: emailSenders.events,
+                    eyebrow: 'Tomorrow Night • Thursday Aug 6',
+                    title: 'Get Ready: Dirt Off Your Shoulders!',
+                    intro: `Hey ${rsvp.name}, tomorrow night we celebrate Jamaica Independence and 20 Years of Jay-Z's Black Album at Dulce Lounge!`,
+                    sections: [
+                        {
+                            title: 'Event Reminder Details',
+                            rows: [
+                                ['Guest Name', rsvp.name],
+                                ['Event', 'ILHH Independence Day Special: Dirt Off Your Shoulders'],
+                                ['Date & Time', 'Thursday, August 6, 2026 @ 9:00 PM'],
+                                ['Venue', 'Dulce Lounge (22 Barbican Road, Kingston)'],
+                                ['Dress Code Reminder', 'Wear FULL BLACK to claim FREE Admission at the door!'],
+                                ['Admission Rates', 'FREE in Full Black w/ RSVP • $500 w/ Standard RSVP • $1,000 Gate'],
+                                ['Lineup', 'Main DJ Troy Finzi | Resident DJ Steamaz | Resident Andre Millwood'],
+                                ['Group Size', rsvp.group_size || 1],
+                            ],
+                        },
+                    ],
+                    action: { label: 'View Event Details & Map', url: siteUrl('/independence') },
+                });
+            });
+
+            await Promise.all(emailPromises);
+
+            return res.status(200).json({
+                success: true,
+                count: rsvps.length,
+                message: `Dispatched ${rsvps.length} Independence Day pre-event reminder email(s).`,
+            });
+        } catch (err) {
+            console.error('Error sending reminder emails:', err);
+            return res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to send reminders' });
+        }
     }
 
     if (req.method !== 'POST') {
